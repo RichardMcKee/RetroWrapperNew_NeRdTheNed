@@ -47,7 +47,7 @@ public class _4KTweakInjector implements IClassTransformer {
         launcherFrameFake.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                System.exit(1);
+                System.exit(0);
             }
         });
         LauncherFake fakeLauncher = new LauncherFake(new HashMap<String, String>(), applet);

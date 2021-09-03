@@ -113,7 +113,7 @@ public class RetroTweakInjectorTarget implements IClassTransformer {
             startMinecraft(fakeLauncher, object, args);
         } catch (Exception e) {
             e.printStackTrace();
-            System.exit(0);
+            System.exit(1);
         }
     }
 
@@ -131,7 +131,7 @@ public class RetroTweakInjectorTarget implements IClassTransformer {
         launcherFrameFake.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                System.exit(1);
+                System.exit(0);
             }
         });
         fakeLauncher.setLayout(new BorderLayout());
