@@ -52,7 +52,6 @@ public class RetroPlayer {
 
         if (aabb != null) {
             int doubleCount = 0;
-            label:
 
             for (final Field f : aabb.getClass().getDeclaredFields()) {
                 if (Modifier.isPublic(f.getModifiers()) && ("double".equals(f.getType().getName()) || "float".equals(f.getType().getName()))) {
@@ -86,7 +85,7 @@ public class RetroPlayer {
                         break;
 
                     default:
-                        break label;
+                        return;
                     }
 
                     doubleCount++;
