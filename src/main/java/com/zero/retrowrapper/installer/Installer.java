@@ -11,7 +11,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URISyntaxException;
-import java.net.URLDecoder;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,7 +22,17 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
-import javax.swing.*;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
@@ -44,19 +53,21 @@ public class Installer {
     static JButton install;
     static JButton uninstall;
 
-    static DefaultListModel<String> model = new DefaultListModel<String>();
+    static DefaultListModel<String> model = new DefaultListModel<>();
     static JList<String> list = new JList<>(model);
 
     public String defaultWorkingDirectory() {
-        String OS = (System.getProperty("os.name")).toUpperCase();
+        final String OS = System.getProperty("os.name").toUpperCase();
 
         if (OS.contains("WIN")) { // windows uses the %appdata%/.minecraft structure
-            return (System.getenv("AppData") + File.separator + ".minecraft");
-        } else if (OS.contains("MAC")) { // mac os uses %user%/Library/Library/Application Support/minecraft
-            return (System.getProperty("user.home") + File.separator + "Library" + File.separator + "Application Support" + File.separator + "minecraft");
-        } else {
-            return (System.getProperty("user.home") + File.separator + ".minecraft");
+            return System.getenv("AppData") + File.separator + ".minecraft";
         }
+
+        if (OS.contains("MAC")) { // mac os uses %user%/Library/Library/Application Support/minecraft
+            return System.getProperty("user.home") + File.separator + "Library" + File.separator + "Application Support" + File.separator + "minecraft";
+        }
+
+        return System.getProperty("user.home") + File.separator + ".minecraft";
     }
 
     boolean refreshList(String givenDirectory) {
@@ -74,20 +85,20 @@ public class Installer {
                 directories = versions.listFiles();
             }
 
-            if (!(directories == null || directories.length == 0)) {
+            if ((directories != null) && (directories.length != 0)) {
                 Arrays.sort(directories);
 
                 // add items
 
-                for (File f : directories) {
+                for (final File f : directories) {
                     if (f.isDirectory()) {
-                        File json = new File(f, f.getName() + ".json");
-                        File jar = new File(f, f.getName() + ".jar");
+                        final File json = new File(f, f.getName() + ".json");
+                        final File jar = new File(f, f.getName() + ".jar");
 
                         if (json.exists() && jar.exists() && !f.getName().contains("-wrapped")) {
                             try
                                 (Scanner s = new Scanner(json).useDelimiter("\\A")) {
-                                String content = s.next();
+                                final String content = s.next();
 
                                 if (content.contains("old_") && !content.contains("retrowrapper")) {
                                     if (new File(versions, f.getName() + "-wrapped").exists()) {
@@ -98,7 +109,7 @@ public class Installer {
                                         model.addElement(f.getName());
                                     }
                                 }
-                            } catch (FileNotFoundException e) {
+                            } catch (final FileNotFoundException e) {
                                 // TODO Auto-generated catch block
                                 e.printStackTrace();
                             }
@@ -115,89 +126,96 @@ public class Installer {
             uninstall.setEnabled(false);
             JOptionPane.showMessageDialog(null, "No directory / minecraft directory detected!\n", "Error", JOptionPane.INFORMATION_MESSAGE);
             return false;
-        } else if (!versions.exists()) {
+        }
+
+        if (!versions.exists()) {
             install.setEnabled(false);
             uninstall.setEnabled(false);
             JOptionPane.showMessageDialog(null, "No Minecraft versions folder found!", "Error", JOptionPane.INFORMATION_MESSAGE);
             return false;
-        } else if (versionCount == 0 && wrappedVersionCount == 0) {
+        }
+
+        if ((versionCount == 0) && (wrappedVersionCount == 0)) {
             install.setEnabled(false);
             uninstall.setEnabled(true);
             JOptionPane.showMessageDialog(null, "No wrappable versions found!", "Error", JOptionPane.INFORMATION_MESSAGE);
             return false;
-        } else if (versionCount == 0) {
+        }
+
+        if (versionCount == 0) {
             install.setEnabled(true);
             uninstall.setEnabled(true);
             JOptionPane.showMessageDialog(null, "All detected versions have already been wrapped!", "Info", JOptionPane.INFORMATION_MESSAGE);
-            return true;
         } else {
             install.setEnabled(true);
             uninstall.setEnabled(true);
-            return true;
         }
+
+        return true;
     }
 
     public Installer() throws Exception {
         workingDirectory = defaultWorkingDirectory();
         //final File[] directoriesFinal = directories;
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        JFrame frame = new JFrame("Retrowrapper - NeRd Fork");
+        final JFrame frame = new JFrame("Retrowrapper - NeRd Fork");
         frame.setPreferredSize(new Dimension(654, 420));
         frame.setLayout(null);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setResizable(false); //add resizing later
-        JLabel label = new JLabel("Retrowrapper Installer");
+        final JLabel label = new JLabel("Retrowrapper Installer");
         label.setFont(label.getFont().deriveFont(20f).deriveFont(Font.BOLD));
         label.setHorizontalAlignment(SwingConstants.CENTER);
         label.setBounds(0, 10, 654, 40);
         frame.add(label);
-        JLabel label3 = new JLabel(MetadataUtil.version + " - " + MetadataUtil.installerSplashes.get(rand.nextInt(MetadataUtil.installerSplashes.size())));
+        final JLabel label3 = new JLabel(MetadataUtil.version + " - " + MetadataUtil.installerSplashes.get(rand.nextInt(MetadataUtil.installerSplashes.size())));
         label3.setFont(label.getFont().deriveFont(12f));
         label3.setHorizontalAlignment(SwingConstants.CENTER);
         label3.setBounds(0, 30, 654, 40);
         frame.add(label3);
-        JLabel label2 = new JLabel("\u00a92018 000");
+        final JLabel label2 = new JLabel("\u00a92018 000");
         label2.setFont(label2.getFont().deriveFont(12f));
         label2.setHorizontalAlignment(SwingConstants.CENTER);
         label2.setBounds(0, 360, 654, 20);
         frame.add(label2);
-        JTextField workDir = new JTextField(workingDirectory);
+        final JTextField workDir = new JTextField(workingDirectory);
         workDir.setHorizontalAlignment(SwingConstants.CENTER);
-        workDir.setBounds(654 / 2 - 150, 65, 300, 20);
+        workDir.setBounds((654 / 2) - 150, 65, 300, 20);
         workDir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String workDirPath = ((JTextField)e.getSource()).getText();
-                File minecraftDir = new File(workDirPath);
+                final String workDirPath = ((JTextField)e.getSource()).getText();
+                final File minecraftDir = new File(workDirPath);
 
                 if (minecraftDir.exists() && refreshList(workDirPath)) {
                     workingDirectory = workDirPath;
-                } else if (minecraftDir.exists()) {
-                    ((JTextField)e.getSource()).setText(workingDirectory);
-                    refreshList(workingDirectory);
                 } else {
-                    JOptionPane.showMessageDialog(null, "No directory / minecraft directory detected!\n", "Error", JOptionPane.INFORMATION_MESSAGE);
+                    if (minecraftDir.exists()) {
+                    } else {
+                        JOptionPane.showMessageDialog(null, "No directory / minecraft directory detected!\n", "Error", JOptionPane.INFORMATION_MESSAGE);
+                    }
+
                     ((JTextField)e.getSource()).setText(workingDirectory);
                     refreshList(workingDirectory);
                 }
             }
         });
         frame.add(workDir);
-        JScrollPane scrollList = new JScrollPane(list);
-        scrollList.setBounds(654 / 2 - 150, 100, 300, 140);
+        final JScrollPane scrollList = new JScrollPane(list);
+        scrollList.setBounds((654 / 2) - 150, 100, 300, 140);
         frame.add(scrollList);
         uninstall = new JButton("Uninstall ALL versions"); //uninstaller code
-        uninstall.setBounds(654 / 2 - 100, 312, 200, 30);
+        uninstall.setBounds((654 / 2) - 100, 312, 200, 30);
         uninstall.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                for (File f : directories) {
+                for (final File f : directories) {
                     if (f.isDirectory() && f.getName().contains("-wrapped")) {
                         deleteDirectory(f);
                     }
                 }
 
-                File libDir = new File(directory, "libraries" + File.separator + "com" + File.separator + "zero");
+                final File libDir = new File(directory, "libraries" + File.separator + "com" + File.separator + "zero");
 
                 if (libDir.exists()) {
                     deleteDirectory(libDir);
@@ -210,13 +228,13 @@ public class Installer {
         });
         frame.add(uninstall);
         install = new JButton("Install"); //installation code
-        install.setBounds(654 / 2 - 100, 270, 200, 40);
+        install.setBounds((654 / 2) - 100, 270, 200, 40);
         install.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                List<String> versionList = list.getSelectedValuesList();
-                String finalVersions = "";
-                File libsDir = new File(directory, "libraries" + File.separator + "com" + File.separator + "zero");
+                final List<String> versionList = list.getSelectedValuesList();
+                final StringBuilder finalVersions = new StringBuilder();
+                final File libsDir = new File(directory, "libraries" + File.separator + "com" + File.separator + "zero");
 
                 if (libsDir.exists()) {
                     deleteDirectory(libsDir); // Makes sure that the library gets reinstalled
@@ -230,12 +248,12 @@ public class Installer {
 
                     try
                         (Reader s = new FileReader(new File(versions, version + File.separator + version + ".json"))) {
-                        finalVersions += version + "\n";
-                        JsonObject versionJson = Json.parse(s).asObject();
-                        String versionWrapped = version + "-wrapped";
+                        finalVersions.append(version).append("\n");
+                        final JsonObject versionJson = Json.parse(s).asObject();
+                        final String versionWrapped = version + "-wrapped";
                         // Add the RetroWrapper library to the list of libraries. A library is a JSON object, and libraries are stored in an array of JSON objects.
-                        JsonObject retrowrapperLibraryJson = Json.object().add("name", "com.zero:retrowrapper:installer");
-                        JsonValue newLibraries = versionJson.get("libraries");
+                        final JsonObject retrowrapperLibraryJson = Json.object().add("name", "com.zero:retrowrapper:installer");
+                        final JsonValue newLibraries = versionJson.get("libraries");
                         newLibraries.asArray().add(retrowrapperLibraryJson);
                         versionJson.set("libraries", newLibraries);
 
@@ -256,9 +274,9 @@ public class Installer {
                         }
 
                         versionJson.set("minecraftArguments", modifiedLaunchArgs);
-                        File wrapDir = new File(versions, versionWrapped + File.separator);
+                        final File wrapDir = new File(versions, versionWrapped + File.separator);
                         wrapDir.mkdirs();
-                        File libDir = new File(directory, "libraries" + File.separator + "com" + File.separator + "zero" + File.separator + "retrowrapper" + File.separator + "installer");
+                        final File libDir = new File(directory, "libraries" + File.separator + "com" + File.separator + "zero" + File.separator + "retrowrapper" + File.separator + "installer");
                         libDir.mkdirs();
 
                         try
@@ -266,18 +284,18 @@ public class Installer {
                             Files.copy(new File(versions, version + File.separator + version + ".jar").toPath(), new File(wrapDir, versionWrapped + ".jar").toPath(), StandardCopyOption.REPLACE_EXISTING);
                             fos.write(versionJson.toString().getBytes());
                             fos.close();
-                            File jar = new File(Installer.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+                            final File jar = new File(Installer.class.getProtectionDomain().getCodeSource().getLocation().toURI());
                             Files.copy(jar.toPath(), new File(libDir, "retrowrapper-installer.jar").toPath(), StandardCopyOption.REPLACE_EXISTING);
                         } catch (IOException | URISyntaxException ee) {
                             ee.printStackTrace();
                         }
-                    } catch (IOException ee) {
+                    } catch (final IOException ee) {
                         ee.printStackTrace();
                         // TODO Better error handling
                     }
                 }
 
-                JOptionPane.showMessageDialog(null, "Successfully wrapped version\n" + finalVersions, "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Successfully wrapped version\n" + finalVersions.toString(), "Success", JOptionPane.INFORMATION_MESSAGE);
                 refreshList(workingDirectory);
                 //System.exit(0);
             }
@@ -292,7 +310,7 @@ public class Installer {
     public static void main(String[] args) {
         try {
             new Installer();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Exception occured!\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -312,7 +330,7 @@ public class Installer {
                     return FileVisitResult.CONTINUE;
                 }
             });
-        } catch (IOException ee) {
+        } catch (final IOException ee) {
             ee.printStackTrace();
         }
     }

@@ -20,19 +20,19 @@ public class SaveHandler extends EmulatorHandler implements IHandler {
     @Override
     @SuppressWarnings("unused")
     public void handle(OutputStream os, String get, byte[] data) throws IOException {
-        DataInputStream dis = new DataInputStream(new ByteArrayInputStream(data));
-        String username = ByteUtils.readString(dis);
-        String token = ByteUtils.readString(dis);
-        String levelName = ByteUtils.readString(dis);
-        byte id = dis.readByte();
-        int levelLength = dis.readInt();
+        final DataInputStream dis = new DataInputStream(new ByteArrayInputStream(data));
+        ByteUtils.readString(dis);
+        ByteUtils.readString(dis);
+        final String levelName = ByteUtils.readString(dis);
+        final byte id = dis.readByte();
+        final int levelLength = dis.readInt();
         System.out.println(levelLength + ";" + data.length);
-        byte[] level = new byte[levelLength];
+        final byte[] level = new byte[levelLength];
         dis.readFully(level);
         os.write("ok\n".getBytes());
         dis.close();
-        File fileMap = new File(RetroEmulator.getInstance().getMapsDirectory(), "map" + id + ".mclevel");
-        File fileMapMeta = new File(RetroEmulator.getInstance().getMapsDirectory(), "map" + id + ".txt");
+        final File fileMap = new File(RetroEmulator.getInstance().getMapsDirectory(), "map" + id + ".mclevel");
+        final File fileMapMeta = new File(RetroEmulator.getInstance().getMapsDirectory(), "map" + id + ".txt");
 
         try
             (FileOutputStream fos = new FileOutputStream(fileMap)) {

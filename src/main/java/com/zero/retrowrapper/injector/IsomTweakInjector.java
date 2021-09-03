@@ -1,16 +1,20 @@
 package com.zero.retrowrapper.injector;
 
-import net.minecraft.launchwrapper.IClassTransformer;
-import net.minecraft.launchwrapper.Launch;
-
-import javax.swing.*;
 import java.applet.Applet;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+
+import javax.swing.JPanel;
+
+import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraft.launchwrapper.Launch;
 
 public class IsomTweakInjector implements IClassTransformer {
     /**
@@ -26,10 +30,10 @@ public class IsomTweakInjector implements IClassTransformer {
     }
 
     public static void main(String[] args) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException {
-        Class<?> clazz = getaClass("net.minecraft.isom.IsomPreviewApplet");
+        final Class<?> clazz = getaClass("net.minecraft.isom.IsomPreviewApplet");
         System.out.println("IsomTweakInjector.class.getClassLoader() = " + IsomTweakInjector.class.getClassLoader());
-        Constructor<?> constructor = clazz.getConstructor();
-        Object object = constructor.newInstance();
+        final Constructor<?> constructor = clazz.getConstructor();
+        final Object object = constructor.newInstance();
         startMinecraft((Applet) object, args);
     }
 
@@ -50,7 +54,7 @@ public class IsomTweakInjector implements IClassTransformer {
                 System.exit(0);
             }
         });
-        LauncherFake fakeLauncher = new LauncherFake(new HashMap<String, String>(), applet);
+        final LauncherFake fakeLauncher = new LauncherFake(new HashMap<String, String>(), applet);
         applet.setStub(fakeLauncher);
         fakeLauncher.setLayout(new BorderLayout());
         fakeLauncher.add(applet, BorderLayout.CENTER);
@@ -62,6 +66,7 @@ public class IsomTweakInjector implements IClassTransformer {
         applet.init();
         applet.start();
         Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
             public void run() {
                 applet.stop();
             }

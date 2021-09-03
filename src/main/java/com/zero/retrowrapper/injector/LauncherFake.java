@@ -12,7 +12,7 @@ import com.zero.retrowrapper.emulator.EmulatorConfig;
 public class LauncherFake extends Applet implements AppletStub {
     private static final long serialVersionUID = 1L;
 
-    private Map<String, String> params = new HashMap<String, String>();
+    private Map<String, String> params = new HashMap<>();
 
     public LauncherFake(Map<String, String> params, Applet applet) {
         this.params = params;
@@ -36,7 +36,7 @@ public class LauncherFake extends Applet implements AppletStub {
     public URL getDocumentBase() {
         try {
             return new URL("http://127.0.0.1:" + EmulatorConfig.getInstance().getPort() + "/game/");
-        } catch (MalformedURLException e) {
+        } catch (final MalformedURLException e) {
             e.printStackTrace();
         }
 
@@ -47,7 +47,7 @@ public class LauncherFake extends Applet implements AppletStub {
     public URL getCodeBase() {
         try {
             return new URL("http://127.0.0.1:" + EmulatorConfig.getInstance().getPort() + "/game/");
-        } catch (MalformedURLException e) {
+        } catch (final MalformedURLException e) {
             e.printStackTrace();
         }
 

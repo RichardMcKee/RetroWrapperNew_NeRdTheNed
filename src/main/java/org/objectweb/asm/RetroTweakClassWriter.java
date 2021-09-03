@@ -22,7 +22,7 @@ public class RetroTweakClassWriter extends ClassWriter {
     private static final int INDY = 18;
     private static final int HANDLE_BASE = 20;
     private static final int TYPE_NORMAL = 30;
-    private String className;
+    private final String className;
 
     public RetroTweakClassWriter(int a, String className) {
         super(a);
@@ -31,11 +31,11 @@ public class RetroTweakClassWriter extends ClassWriter {
 
     @Override
     public byte[] toByteArray() {
-        ClassWriter writer = new ClassWriter(0);
-        byte[] bytes = super.toByteArray();
-        List<Item> items = new ArrayList<>();
+        final ClassWriter writer = new ClassWriter(0);
+        final byte[] bytes = super.toByteArray();
+        final List<Item> items = new ArrayList<>();
 
-        for (Item item : e) {
+        for (final Item item : e) {
             Item next = item;
 
             while (next != null) {
@@ -44,19 +44,19 @@ public class RetroTweakClassWriter extends ClassWriter {
             }
         }
 
-        for (Item item : items) {
+        for (final Item item : items) {
             item.a = writer.c++;
 
-            if (item.b == LONG || item.b == DOUBLE) {
+            if ((item.b == LONG) || (item.b == DOUBLE)) {
                 writer.c++;
             }
 
-            int hash = item.j % writer.e.length;
+            final int hash = item.j % writer.e.length;
             item.k = writer.e[hash];
             writer.e[hash] = item;
         }
 
-        for (Item item : items) {
+        for (final Item item : items) {
             switch (item.b) {
             case UTF8:
                 if (item.g.contains("random.splash") || item.g.contains("char.png")) {
@@ -66,14 +66,14 @@ public class RetroTweakClassWriter extends ClassWriter {
                 } else if (item.g.contains(".com")) {
                     System.out.println("Found URL!: " + item.g);
                     String finalstr = item.g;
-                    finalstr = ((item.g.contains("https://") | item.g.contains("http://")) ? "http://" : "") + "127.0.0.1:" + EmulatorConfig.getInstance().getPort() + item.g.replace(finalstr.split(".com")[0] + ".com", "");
+                    finalstr = (item.g.contains("https://") | item.g.contains("http://") ? "http://" : "") + "127.0.0.1:" + EmulatorConfig.getInstance().getPort() + item.g.replace(finalstr.split(".com")[0] + ".com", "");
                     System.out.println("Replaced with: " + finalstr);
                     writer.d.putByte(UTF8).putUTF8(finalstr);
                 } else if (item.g.contains(".net")) {
                     System.out.println("Found URL!: " + item.g);
                     String finalstr = item.g;
 
-                    if (finalstr.equals("minecraft.net")) {
+                    if ("minecraft.net".equals(finalstr)) {
                         finalstr = "127.0.0.1";
                     } else {
                         finalstr = (item.g.contains("https://") ? "https://" : "") + (item.g.contains("http://") ? "http://" : "") + "127.0.0.1:" + EmulatorConfig.getInstance().getPort() + item.g.replace(finalstr.split(".net")[0] + ".net", "");
@@ -118,8 +118,8 @@ public class RetroTweakClassWriter extends ClassWriter {
                 break;
             }
 
-            if (item.b >= HANDLE_BASE && item.b < TYPE_NORMAL) {
-                int tag = item.b - HANDLE_BASE;
+            if ((item.b >= HANDLE_BASE) && (item.b < TYPE_NORMAL)) {
+                final int tag = item.b - HANDLE_BASE;
 
                 if (tag <= Opcodes.H_PUTSTATIC) {
                     writer.d.putByte(HANDLE).putByte(tag).putShort(writer.newField(item.g, item.h, item.i));
@@ -129,7 +129,7 @@ public class RetroTweakClassWriter extends ClassWriter {
             }
         }
 
-        ClassReader reader = new ClassReader(bytes);
+        final ClassReader reader = new ClassReader(bytes);
         reader.accept(writer, 0);
         return writer.toByteArray();
     }

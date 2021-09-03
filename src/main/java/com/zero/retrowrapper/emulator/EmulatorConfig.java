@@ -10,7 +10,7 @@ public class EmulatorConfig {
     public Field minecraftField;
     public Applet applet;
 
-    private int port;
+    private final int port;
 
     public String mobClass;
 

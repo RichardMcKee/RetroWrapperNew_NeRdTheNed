@@ -1,16 +1,10 @@
 package com.zero.retrowrapper.injector;
 
-import net.minecraft.launchwrapper.IClassTransformer;
-import net.minecraft.launchwrapper.Launch;
-
-import javax.swing.*;
-
-import com.zero.retrowrapper.emulator.EmulatorConfig;
-import com.zero.retrowrapper.emulator.RetroEmulator;
-import com.zero.retrowrapper.hack.HackThread;
-
 import java.applet.Applet;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.Constructor;
@@ -20,6 +14,15 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
+import javax.swing.JPanel;
+
+import com.zero.retrowrapper.emulator.EmulatorConfig;
+import com.zero.retrowrapper.emulator.RetroEmulator;
+import com.zero.retrowrapper.hack.HackThread;
+
+import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraft.launchwrapper.Launch;
 
 public class RetroTweakInjectorTarget implements IClassTransformer {
     /**
@@ -43,7 +46,7 @@ public class RetroTweakInjectorTarget implements IClassTransformer {
         System.out.println("*       emulator by 000      *");
         System.out.println("******************************");
         new RetroEmulator().start();
-        Properties props = System.getProperties();
+        final Properties props = System.getProperties();
 
         if (props.getProperty("retrowrapper.hack") != null) {
             new HackThread().start();
@@ -55,40 +58,40 @@ public class RetroTweakInjectorTarget implements IClassTransformer {
 
             try {
                 clazz = getaClass("net.minecraft.client.MinecraftApplet");
-            } catch (ClassNotFoundException ex) {
+            } catch (final ClassNotFoundException ex) {
                 veryOld = true;
                 clazz = getaClass("com.mojang.minecraft.MinecraftApplet");
             }
 
-            final Map<String, String> params = new HashMap<String, String>();
-            String username = args.length > 0 ? args[0] : "Player" + System.currentTimeMillis() % 1000;
-            String sessionId = args.length > 1 ? args[1] : "-";
+            final Map<String, String> params = new HashMap<>();
+            final String username = args.length > 0 ? args[0] : "Player" + (System.currentTimeMillis() % 1000);
+            final String sessionId = args.length > 1 ? args[1] : "-";
             params.put("username", username);
             params.put("sessionid", sessionId);
             params.put("haspaid", "true");
-            Constructor<?> constructor = clazz.getConstructor();
-            Applet object = (Applet)constructor.newInstance();
-            LauncherFake fakeLauncher = new LauncherFake(params, object);
+            final Constructor<?> constructor = clazz.getConstructor();
+            final Applet object = (Applet)constructor.newInstance();
+            final LauncherFake fakeLauncher = new LauncherFake(params, object);
             object.setStub(fakeLauncher);
             object.setSize(854, 480);
             object.init();
 
-            for (Field field : clazz.getDeclaredFields()) {
-                String name = field.getType().getName();
+            for (final Field field : clazz.getDeclaredFields()) {
+                final String name = field.getType().getName();
 
-                if (!name.contains("awt") && !name.contains("java") && !name.equals("long")) {
+                if (!name.contains("awt") && !name.contains("java") && !"long".equals(name)) {
                     System.out.println("Found likely Minecraft candidate: " + field);
                     EmulatorConfig.getInstance().minecraftField = field;
-                    Field fileField = getWorkingDirField(name);
+                    final Field fileField = getWorkingDirField(name);
 
                     if (veryOld) {
                         field.setAccessible(true);
-                        Object mcObj = field.get(object);
+                        final Object mcObj = field.get(object);
                         System.out.println(mcObj);
                         Field appletField = null;
 
-                        for (Field f : mcObj.getClass().getDeclaredFields()) {
-                            if (f.getType().getName().equals("boolean") && Modifier.isPublic(f.getModifiers())) {
+                        for (final Field f : mcObj.getClass().getDeclaredFields()) {
+                            if ("boolean".equals(f.getType().getName()) && Modifier.isPublic(f.getModifiers())) {
                                 appletField = f;
                                 break;
                             }
@@ -111,7 +114,7 @@ public class RetroTweakInjectorTarget implements IClassTransformer {
 
             EmulatorConfig.getInstance().applet = object;
             startMinecraft(fakeLauncher, object, args);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
@@ -143,6 +146,7 @@ public class RetroTweakInjectorTarget implements IClassTransformer {
         launcherFrameFake.validate();
         applet.start();
         Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
             public void run() {
                 applet.stop();
             }
@@ -155,10 +159,10 @@ public class RetroTweakInjectorTarget implements IClassTransformer {
     }
 
     private static Field getWorkingDirField(String name) throws ClassNotFoundException {
-        Class<?> clazz = getaClass(name);
+        final Class<?> clazz = getaClass(name);
 
-        for (Field field : clazz.getDeclaredFields()) {
-            if (Modifier.isStatic(field.getModifiers()) && field.getType().getName().equals("java.io.File")) {
+        for (final Field field : clazz.getDeclaredFields()) {
+            if (Modifier.isStatic(field.getModifiers()) && "java.io.File".equals(field.getType().getName())) {
                 return field;
             }
         }

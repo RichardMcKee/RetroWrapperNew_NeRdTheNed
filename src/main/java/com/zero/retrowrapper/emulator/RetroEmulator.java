@@ -32,15 +32,15 @@ public class RetroEmulator extends Thread implements Runnable {
         try
             (ServerSocket server = new ServerSocket(EmulatorConfig.getInstance().getPort())) {
             while (true) {
-                Socket socket = server.accept();
+                final Socket socket = server.accept();
 
                 try {
-                    new SocketEmulator(socket).parseIncoming();;
-                } catch (Exception e) {
+                    new SocketEmulator(socket).parseIncoming();
+                } catch (final Exception e) {
                     e.printStackTrace();
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }

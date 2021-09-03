@@ -1,14 +1,11 @@
 package com.zero.retrowrapper.injector;
 
-import net.minecraft.launchwrapper.IClassTransformer;
-import net.minecraft.launchwrapper.Launch;
+import static org.objectweb.asm.Opcodes.ASM4;
+import static org.objectweb.asm.Opcodes.ASTORE;
+import static org.objectweb.asm.Opcodes.GOTO;
+import static org.objectweb.asm.Opcodes.INVOKESTATIC;
+import static org.objectweb.asm.Opcodes.TABLESWITCH;
 
-import org.objectweb.asm.*;
-import org.objectweb.asm.tree.*;
-
-import static org.objectweb.asm.Opcodes.*;
-
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +15,21 @@ import java.util.List;
 import java.util.ListIterator;
 
 import javax.imageio.ImageIO;
+
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.RetroTweakClassWriter;
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.JumpInsnNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.TableSwitchInsnNode;
+import org.objectweb.asm.tree.VarInsnNode;
+
+import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraft.launchwrapper.Launch;
 
 public class RetroTweakInjector implements IClassTransformer {
     /**
@@ -38,10 +50,10 @@ public class RetroTweakInjector implements IClassTransformer {
             final ClassReader cr = new ClassReader(bytesOld);
             final ClassNode classNodeOld = new ClassNode();
             cr.accept(classNodeOld, ClassReader.EXPAND_FRAMES);
-            RetroTweakClassWriter cw = new RetroTweakClassWriter(0, classNodeOld.name.replaceAll("/", "."));
-            ClassVisitor s = new ClassVisitor(ASM4, cw) {};
+            final RetroTweakClassWriter cw = new RetroTweakClassWriter(0, classNodeOld.name.replace('/', '.'));
+            final ClassVisitor s = new ClassVisitor(ASM4, cw) {};
             cr.accept(s, 0);
-            byte[] bytes = cw.toByteArray();
+            final byte[] bytes = cw.toByteArray();
             final ClassReader classReader = new ClassReader(bytes);
             final ClassNode classNode = new ClassNode();
             classReader.accept(classNode, ClassReader.EXPAND_FRAMES);
@@ -53,7 +65,7 @@ public class RetroTweakInjector implements IClassTransformer {
             MethodNode runMethod = null;
 
             for (final Object methodNode : classNode.methods) {
-                MethodNode m = (MethodNode) methodNode;
+                final MethodNode m = (MethodNode) methodNode;
 
                 if ("run".equals(m.name)) {
                     runMethod = m;
@@ -73,9 +85,9 @@ public class RetroTweakInjector implements IClassTransformer {
                 AbstractInsnNode instruction = iterator.next();
 
                 if (instruction.getOpcode() == TABLESWITCH) {
-                    TableSwitchInsnNode tableSwitchInsnNode = (TableSwitchInsnNode) instruction;
+                    final TableSwitchInsnNode tableSwitchInsnNode = (TableSwitchInsnNode) instruction;
                     firstSwitchJump = runMethod.instructions.indexOf((AbstractInsnNode) tableSwitchInsnNode.labels.get(0));
-                } else if (firstSwitchJump >= 0 && runMethod.instructions.indexOf(instruction) == firstSwitchJump) {
+                } else if ((firstSwitchJump >= 0) && (runMethod.instructions.indexOf(instruction) == firstSwitchJump)) {
                     int endOfSwitch = -1;
 
                     while (iterator.hasNext()) {
@@ -88,7 +100,7 @@ public class RetroTweakInjector implements IClassTransformer {
                     }
 
                     if (endOfSwitch >= 0) {
-                        while (runMethod.instructions.indexOf(instruction) != endOfSwitch && iterator.hasNext()) {
+                        while ((runMethod.instructions.indexOf(instruction) != endOfSwitch) && iterator.hasNext()) {
                             instruction = iterator.next();
                         }
 
@@ -102,7 +114,7 @@ public class RetroTweakInjector implements IClassTransformer {
             final ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
             classNode.accept(writer);
             return writer.toByteArray();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return bytesOld;
         }
     }
@@ -118,43 +130,43 @@ public class RetroTweakInjector implements IClassTransformer {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static void loadIconsOnFrames() {
         try {
-            File e = new File(Launch.assetsDir, "icons/icon_16x16.png");
-            File bigIcon = new File(Launch.assetsDir, "icons/icon_32x32.png");
+            final File e = new File(Launch.assetsDir, "icons/icon_16x16.png");
+            final File bigIcon = new File(Launch.assetsDir, "icons/icon_32x32.png");
             System.out.println("Loading current icons for window from: " + e + " and " + bigIcon);
 //          Display.setIcon(new ByteBuffer[]{loadIcon(e), loadIcon(bigIcon)});
-            java.awt.Frame[] frames = java.awt.Frame.getFrames();
+            final java.awt.Frame[] frames = java.awt.Frame.getFrames();
 
             if (frames != null) {
-                List icons = Arrays.asList(new Image[] {ImageIO.read(e), ImageIO.read(bigIcon)});
-                java.awt.Frame[] arg3 = frames;
-                int arg4 = frames.length;
+                final List icons = Arrays.asList(ImageIO.read(e), ImageIO.read(bigIcon));
+                final java.awt.Frame[] arg3 = frames;
+                final int arg4 = frames.length;
 
                 for (int arg5 = 0; arg5 < arg4; ++arg5) {
-                    java.awt.Frame frame = arg3[arg5];
+                    final java.awt.Frame frame = arg3[arg5];
 
                     try {
                         frame.setIconImages(icons);
-                    } catch (Throwable arg8) {
+                    } catch (final Throwable arg8) {
                         arg8.printStackTrace();
                     }
                 }
             }
-        } catch (IOException arg9) {
+        } catch (final IOException arg9) {
             arg9.printStackTrace();
         }
     }
 
     @SuppressWarnings("unused") //I'm pretty sure this is used...
     private static ByteBuffer loadIcon(File iconFile) throws IOException {
-        BufferedImage icon = ImageIO.read(iconFile);
-        int[] rgb = icon.getRGB(0, 0, icon.getWidth(), icon.getHeight(), (int[]) null, 0, icon.getWidth());
-        ByteBuffer buffer = ByteBuffer.allocate(4 * rgb.length);
-        int[] arg3 = rgb;
-        int arg4 = rgb.length;
+        final BufferedImage icon = ImageIO.read(iconFile);
+        final int[] rgb = icon.getRGB(0, 0, icon.getWidth(), icon.getHeight(), (int[]) null, 0, icon.getWidth());
+        final ByteBuffer buffer = ByteBuffer.allocate(4 * rgb.length);
+        final int[] arg3 = rgb;
+        final int arg4 = rgb.length;
 
         for (int arg5 = 0; arg5 < arg4; ++arg5) {
-            int color = arg3[arg5];
-            buffer.putInt(color << 8 | color >> 24 & 255);
+            final int color = arg3[arg5];
+            buffer.putInt((color << 8) | ((color >> 24) & 255));
         }
 
         buffer.flip();

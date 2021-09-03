@@ -27,7 +27,7 @@ import com.zero.retrowrapper.emulator.registry.EmulatorHandler;
 import com.zero.retrowrapper.emulator.registry.IHandler;
 
 public class SkinHandler extends EmulatorHandler implements IHandler {
-    private HashMap<String, byte[]> skinsCache = new HashMap<>();
+    private final HashMap<String, byte[]> skinsCache = new HashMap<>();
 
     public SkinHandler(String url) {
         super(url);
@@ -35,21 +35,21 @@ public class SkinHandler extends EmulatorHandler implements IHandler {
 
     @Override
     public void handle(OutputStream os, String get, byte[] data) throws IOException {
-        String username = get.replace(url, "").replace(".png", "");
+        final String username = get.replace(url, "").replace(".png", "");
 
         if (skinsCache.containsKey(username)) {
             os.write(skinsCache.get(username));
         } else {
-            byte[] bytes3 = downloadSkin(username);
+            final byte[] bytes3 = downloadSkin(username);
 
             if (bytes3 != null) {
-                BufferedImage imgSkinRaw = ImageIO.read(new ByteArrayInputStream(bytes3));
-                BufferedImage imgSkinFixed = new BufferedImage(64, 32, BufferedImage.TYPE_INT_ARGB);
+                final BufferedImage imgSkinRaw = ImageIO.read(new ByteArrayInputStream(bytes3));
+                final BufferedImage imgSkinFixed = new BufferedImage(64, 32, BufferedImage.TYPE_INT_ARGB);
                 imgSkinFixed.getGraphics().drawImage(imgSkinRaw, 0, 0, null);
-                ByteArrayOutputStream osSkin = new ByteArrayOutputStream();
+                final ByteArrayOutputStream osSkin = new ByteArrayOutputStream();
                 ImageIO.write(imgSkinFixed, "png", osSkin);
                 osSkin.flush();
-                byte[] bytes = osSkin.toByteArray();
+                final byte[] bytes = osSkin.toByteArray();
                 os.write(bytes);
                 skinsCache.put(username, bytes);
             }
@@ -58,35 +58,35 @@ public class SkinHandler extends EmulatorHandler implements IHandler {
 
     private byte[] downloadSkin(String username) throws IOException {
         //using json now
-        File skinCache = new File(RetroEmulator.getInstance().getCacheDirectory(), username + ".png");
+        final File skinCache = new File(RetroEmulator.getInstance().getCacheDirectory(), username + ".png");
 
         try
             (InputStreamReader reader = new InputStreamReader(new URL("https://api.mojang.com/users/profiles/minecraft/" + username + "?at=" + System.currentTimeMillis()).openStream())) {
-            JsonObject profile1 = (JsonObject) Json.parse(reader);
-            String uuid = profile1.get("id").asString();
+            final JsonObject profile1 = (JsonObject) Json.parse(reader);
+            final String uuid = profile1.get("id").asString();
             System.out.println(uuid);
 
             try
                 (InputStreamReader reader2 = new InputStreamReader(new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid).openStream())) {
-                JsonObject profile2 = (JsonObject) Json.parse(reader2);
-                JsonArray properties = (JsonArray) profile2.get("properties");
+                final JsonObject profile2 = (JsonObject) Json.parse(reader2);
+                final JsonArray properties = (JsonArray) profile2.get("properties");
                 String base64 = "";
 
-                for (JsonValue property : properties) {
-                    JsonObject propertyj = property.asObject();
+                for (final JsonValue property : properties) {
+                    final JsonObject propertyj = property.asObject();
 
-                    if (propertyj.get("name").asString().equalsIgnoreCase("textures")) {
+                    if ("textures".equalsIgnoreCase(propertyj.get("name").asString())) {
                         base64 = propertyj.get("value").asString();
                     }
                 }
 
-                JsonObject textures1 = (JsonObject) Json.parse(new String(Base64.decodeBase64(base64)));
-                JsonObject textures = (JsonObject) textures1.get("textures");
-                JsonObject skin = (JsonObject) textures.get("SKIN");
-                String skinURL = skin.get("url").asString();
+                final JsonObject textures1 = (JsonObject) Json.parse(new String(Base64.decodeBase64(base64)));
+                final JsonObject textures = (JsonObject) textures1.get("textures");
+                final JsonObject skin = (JsonObject) textures.get("SKIN");
+                final String skinURL = skin.get("url").asString();
                 System.out.println(skinURL);
-                InputStream is = new URL(skinURL).openStream();
-                byte[] skinBytes = ByteUtils.readFully(is);
+                final InputStream is = new URL(skinURL).openStream();
+                final byte[] skinBytes = ByteUtils.readFully(is);
 
                 try
                     (FileOutputStream fos = new FileOutputStream(skinCache)) {
@@ -96,7 +96,7 @@ public class SkinHandler extends EmulatorHandler implements IHandler {
 
                 return skinBytes;
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
 
             if (skinCache.exists()) {

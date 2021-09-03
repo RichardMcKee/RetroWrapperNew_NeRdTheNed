@@ -17,8 +17,8 @@ public class ResourcesHandlerBeta extends EmulatorHandler implements IHandler {
 
     @Override
     public void handle(OutputStream os, String get, byte[] data) throws IOException {
-        URL resourceURL = new URL("http://s3.amazonaws.com" + get);
-        InputStream is = resourceURL.openStream();
+        final URL resourceURL = new URL("http://s3.amazonaws.com" + get);
+        final InputStream is = resourceURL.openStream();
         os.write(ByteUtils.readFully(is));
     }
 }

@@ -18,12 +18,12 @@ public class LoadHandler extends EmulatorHandler implements IHandler {
 
     @Override
     public void handle(OutputStream os, String get, byte[] data) throws IOException {
-        String id = get.replace("/level/load.html?id=", "").split("&")[0];
+        final String id = get.replace("/level/load.html?id=", "").split("&")[0];
 
         try
             (FileInputStream fis = new FileInputStream(new File(RetroEmulator.getInstance().getMapsDirectory(), "map" + id + ".mclevel"))) {
-            byte[] bytes = ByteUtils.readFully(fis);
-            DataOutputStream dis = new DataOutputStream(os);
+            final byte[] bytes = ByteUtils.readFully(fis);
+            final DataOutputStream dis = new DataOutputStream(os);
             dis.writeUTF("ok");
             dis.write(bytes);
         }

@@ -17,11 +17,11 @@ public class ListmapsHandler extends EmulatorHandler implements IHandler {
     @Override
     public void handle(OutputStream os, String get, byte[] data) throws IOException {
         for (int i = 0; i < 5; i++) {
-            File file = new File(RetroEmulator.getInstance().getMapsDirectory(), "map" + i + ".txt");
+            final File file = new File(RetroEmulator.getInstance().getMapsDirectory(), "map" + i + ".txt");
             String name = "-;";
 
             if (file.exists()) {
-                Scanner tempScan = new Scanner(file);
+                final Scanner tempScan = new Scanner(file);
                 name = tempScan.nextLine() + ";";
                 tempScan.close();
             }

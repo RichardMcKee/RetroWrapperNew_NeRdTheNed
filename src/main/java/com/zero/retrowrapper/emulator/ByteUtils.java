@@ -7,16 +7,16 @@ import java.io.InputStream;
 
 public class ByteUtils {
     public static String readString(DataInputStream dis) throws IOException {
-        int len = dis.readUnsignedShort();
+        final int len = dis.readUnsignedShort();
         System.out.println(len);
-        byte[] bytes = new byte[len];
+        final byte[] bytes = new byte[len];
         dis.read(bytes);
         return new String(bytes);
     }
 
     public static byte[] readFully(InputStream is) throws IOException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        byte[] buffer = new byte[8192];
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final byte[] buffer = new byte[8192];
         int read = 0;
         int buffered = 0;
 
@@ -24,7 +24,7 @@ public class ByteUtils {
             bos.write(buffer, 0, read);
             buffered += read;
 
-            if (buffered > 1024 * 1024) {
+            if (buffered > (1024 * 1024)) {
                 bos.flush();
                 buffered = 0;
             }
@@ -34,10 +34,10 @@ public class ByteUtils {
     }
 
     public static String readLine(DataInputStream dis) throws IOException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
         while (true) {
-            int b = dis.read();
+            final int b = dis.read();
 
             if (b == 0x0a) {
                 break;

@@ -28,9 +28,9 @@ public class RetroPlayer {
                 ax = getVariable(x2, aabb) - getX();
                 ay = getVariable(y2, aabb) - getY();
                 az = getVariable(z2, aabb) - getZ();
-                thread.label.setText("<html>Position:<br>&nbsp&nbsp&nbsp;x: " + Math.floor(getX() * 10) / 10 + "<br>&nbsp&nbsp&nbsp;y: " + Math.floor(getY() * 10) / 10 + "<br>&nbsp&nbsp&nbsp;z: " + Math.floor(getZ() * 10) / 10 + "</html>");
+                thread.label.setText("<html>Position:<br>&nbsp&nbsp&nbsp;x: " + (Math.floor(getX() * 10) / 10) + "<br>&nbsp&nbsp&nbsp;y: " + (Math.floor(getY() * 10) / 10) + "<br>&nbsp&nbsp&nbsp;z: " + (Math.floor(getZ() * 10) / 10) + "</html>");
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             Thread.sleep(1000);
         }
@@ -39,16 +39,14 @@ public class RetroPlayer {
     public void setAABB() throws IllegalArgumentException, IllegalAccessException {
         boolean flag2 = false;
 
-        for (Field f : entityClass.getDeclaredFields()) {
+        for (final Field f : entityClass.getDeclaredFields()) {
             if (!flag2) {
-                if (f.getType().getName().equals("float")) {
+                if ("float".equals(f.getType().getName())) {
                     flag2 = true;
                 }
-            } else {
-                if (!f.getType().isPrimitive()) {
-                    aabb = f.get(playerObj);
-                    break;
-                }
+            } else if (!f.getType().isPrimitive()) {
+                aabb = f.get(playerObj);
+                break;
             }
         }
 
@@ -56,9 +54,9 @@ public class RetroPlayer {
             int doubleCount = 0;
             label:
 
-            for (Field f : aabb.getClass().getDeclaredFields()) {
-                if (Modifier.isPublic(f.getModifiers()) && (f.getType().getName().equals("double") || f.getType().getName().equals("float"))) {
-                    if (f.getType().getName().equals("float")) {
+            for (final Field f : aabb.getClass().getDeclaredFields()) {
+                if (Modifier.isPublic(f.getModifiers()) && ("double".equals(f.getType().getName()) || "float".equals(f.getType().getName()))) {
+                    if ("float".equals(f.getType().getName())) {
                         modeFloat = true;
                     }
 
@@ -112,9 +110,9 @@ public class RetroPlayer {
     private double getVariable(Field f, Object o) throws IllegalArgumentException, IllegalAccessException {
         if (modeFloat) {
             return ((Float)f.getFloat(o)).doubleValue();
-        } else {
-            return f.getDouble(o);
         }
+
+        return f.getDouble(o);
     }
 
     public void teleport(double dx, double dy, double dz) throws IllegalArgumentException, IllegalAccessException {
