@@ -77,13 +77,8 @@ version = project.version
 
 task checkRelease {
     if (!(System.getenv("BUILD_RELEASE") == "true")) {
-        version += ("-SNAPSHOT+" + getTimestampSuffix())
+        version += ("-SNAPSHOT")
     }
-}
-
-def getTimestampSuffix() {
-    def date = new Date()
-    return date.format('yyyy-MM-dd_HHmmss')
 }
 
 dependencies {
