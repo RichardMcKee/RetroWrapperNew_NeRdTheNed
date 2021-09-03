@@ -90,11 +90,10 @@ public class Installer {
                                 String content = s.next();
 
                                 if (content.contains("old_") && !content.contains("retrowrapper")) {
-                                    if(new File(versions, f.getName() + "-wrapped").exists()){
+                                    if (new File(versions, f.getName() + "-wrapped").exists()) {
                                         wrappedVersionCount++;
-                                        model.addElement(f.getName()+" - already wrapped");
-                                    }
-                                    else {
+                                        model.addElement(f.getName() + " - already wrapped");
+                                    } else {
                                         versionCount++;
                                         model.addElement(f.getName());
                                     }
@@ -173,12 +172,10 @@ public class Installer {
 
                 if (minecraftDir.exists() && refreshList(workDirPath)) {
                     workingDirectory = workDirPath;
-                }
-                else if (minecraftDir.exists()){
+                } else if (minecraftDir.exists()) {
                     ((JTextField)e.getSource()).setText(workingDirectory);
                     refreshList(workingDirectory);
-                }
-                else {
+                } else {
                     JOptionPane.showMessageDialog(null, "No directory / minecraft directory detected!\n", "Error", JOptionPane.INFORMATION_MESSAGE);
                     ((JTextField)e.getSource()).setText(workingDirectory);
                     refreshList(workingDirectory);
@@ -219,20 +216,20 @@ public class Installer {
             public void actionPerformed(ActionEvent e) {
                 List<String> versionList = list.getSelectedValuesList();
                 String finalVersions = "";
-
                 File libsDir = new File(directory, "libraries" + File.separator + "com" + File.separator + "zero");
 
                 if (libsDir.exists()) {
                     deleteDirectory(libsDir); // Makes sure that the library gets reinstalled
                 }
 
-                for(String version : versionList){
-                    if(version.contains("- already wrapped")){
+                for (String version : versionList) {
+                    if (version.contains("- already wrapped")) {
                         version = version.replace(" - already wrapped", "");
                         deleteDirectory(new File(directory, "versions" + File.separator + version + "-wrapped"));
                     }
+
                     try
-                    (Reader s = new FileReader(new File(versions, version + File.separator + version + ".json"))) {
+                        (Reader s = new FileReader(new File(versions, version + File.separator + version + ".json"))) {
                         finalVersions += version + "\n";
                         JsonObject versionJson = Json.parse(s).asObject();
                         String versionWrapped = version + "-wrapped";
@@ -265,7 +262,7 @@ public class Installer {
                         libDir.mkdirs();
 
                         try
-                        (FileOutputStream fos = new FileOutputStream(new File(wrapDir, versionWrapped + ".json"))) {
+                            (FileOutputStream fos = new FileOutputStream(new File(wrapDir, versionWrapped + ".json"))) {
                             Files.copy(new File(versions, version + File.separator + version + ".jar").toPath(), new File(wrapDir, versionWrapped + ".jar").toPath(), StandardCopyOption.REPLACE_EXISTING);
                             fos.write(versionJson.toString().getBytes());
                             fos.close();
@@ -279,6 +276,7 @@ public class Installer {
                         // TODO Better error handling
                     }
                 }
+
                 JOptionPane.showMessageDialog(null, "Successfully wrapped version\n" + finalVersions, "Success", JOptionPane.INFORMATION_MESSAGE);
                 refreshList(workingDirectory);
                 //System.exit(0);
