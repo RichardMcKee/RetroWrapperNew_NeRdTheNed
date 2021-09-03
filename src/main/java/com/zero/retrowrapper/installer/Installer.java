@@ -34,6 +34,8 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import org.apache.commons.lang3.SystemUtils;
+
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
@@ -57,13 +59,11 @@ public class Installer {
     static JList<String> list = new JList<>(model);
 
     public String defaultWorkingDirectory() {
-        final String OS = System.getProperty("os.name").toUpperCase();
-
-        if (OS.contains("WIN")) { // windows uses the %appdata%/.minecraft structure
+        if (SystemUtils.IS_OS_WINDOWS) { // windows uses the %appdata%/.minecraft structure
             return System.getenv("AppData") + File.separator + ".minecraft";
         }
 
-        if (OS.contains("MAC")) { // mac os uses %user%/Library/Library/Application Support/minecraft
+        if (SystemUtils.IS_OS_MAC) { // mac os uses %user%/Library/Library/Application Support/minecraft
             return System.getProperty("user.home") + File.separator + "Library" + File.separator + "Application Support" + File.separator + "minecraft";
         }
 

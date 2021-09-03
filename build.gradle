@@ -70,6 +70,7 @@ shadowJar {
     // Relocate libraries to prevent them from leaking into the classpath for other applications
     relocate 'org.apache.commons.codec', 'com.zero.retrowrapper.shadow.commons-codec'
     relocate 'org.apache.commons.io', 'com.zero.retrowrapper.shadow.commons-io'
+    relocate 'org.apache.commons.lang3', 'com.zero.retrowrapper.shadow.commons-lang3'
     relocate 'com.eclipsesource.json', 'com.zero.retrowrapper.shadow.minimal-json'
 }
 
@@ -98,6 +99,9 @@ dependencies {
 
     // commons-io, for file access
     implementation "commons-io:commons-io:${project.commonsIOVersion}"
+
+    // commons-lang, for OS utilities
+    implementation "org.apache.commons:commons-lang3:${project.commonsLangVersion}"
 
     // minimal-json
     implementation "com.eclipsesource.minimal-json:minimal-json:${project.minimalJsonVersion}"
