@@ -41,24 +41,22 @@ import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import com.zero.retrowrapper.util.MetadataUtil;
 
-public class Installer {
+public final class Installer {
 
-    private final static Random rand = new Random();
+    private static final Random rand = new Random();
 
-    //TODO: F1X TH1S. Everything must go!
-    static int versionCount;
-    static int wrappedVersionCount;
-    static String workingDirectory;
-    static File directory;
-    static File[] directories;
-    static File versions;
-    static JButton install;
-    static JButton uninstall;
+    // TODO Some of these variables should possibly be refactored to not be static
+    private static String workingDirectory;
+    private static File directory;
+    private static File[] directories;
+    private static File versions;
+    private static JButton install;
+    private static JButton uninstall;
 
-    static DefaultListModel<String> model = new DefaultListModel<>();
-    static JList<String> list = new JList<>(model);
+    private static DefaultListModel<String> model = new DefaultListModel<>();
+    private static JList<String> list = new JList<>(model);
 
-    public String defaultWorkingDirectory() {
+    private static String defaultWorkingDirectory() {
         if (SystemUtils.IS_OS_WINDOWS) { // windows uses the %appdata%/.minecraft structure
             return System.getenv("AppData") + File.separator + ".minecraft";
         }
@@ -70,9 +68,9 @@ public class Installer {
         return System.getProperty("user.home") + File.separator + ".minecraft";
     }
 
-    boolean refreshList(String givenDirectory) {
-        versionCount = 0;
-        wrappedVersionCount = 0;
+    private static boolean refreshList(String givenDirectory) {
+        int versionCount = 0;
+        int wrappedVersionCount = 0;
         model.removeAllElements();
 
         if (!givenDirectory.isEmpty()) {
@@ -89,6 +87,7 @@ public class Installer {
                 Arrays.sort(directories);
 
                 // add items
+                // TODO Refactor into separate method
 
                 for (final File f : directories) {
                     if (f.isDirectory()) {
@@ -110,7 +109,7 @@ public class Installer {
                                     }
                                 }
                             } catch (final FileNotFoundException e) {
-                                // TODO Auto-generated catch block
+                                // TODO Better error handling
                                 e.printStackTrace();
                             }
                         }
@@ -154,33 +153,43 @@ public class Installer {
         return true;
     }
 
-    public Installer() throws Exception {
+    // TODO Refactor parts into separate method
+    // TODO The installer can take a very long time to start up when there are large amounts of instances
+    private Installer() {
         workingDirectory = defaultWorkingDirectory();
-        //final File[] directoriesFinal = directories;
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (final Exception e) {
+            // Ignore
+            e.printStackTrace();
+        }
+
         final JFrame frame = new JFrame("Retrowrapper - NeRd Fork");
         frame.setPreferredSize(new Dimension(654, 420));
         frame.setLayout(null);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setResizable(false); //add resizing later
+        // TODO Allow resizing
+        frame.setResizable(false);
         final JLabel label = new JLabel("Retrowrapper Installer");
-        label.setFont(label.getFont().deriveFont(20f).deriveFont(Font.BOLD));
+        label.setFont(label.getFont().deriveFont(20F).deriveFont(Font.BOLD));
         label.setHorizontalAlignment(SwingConstants.CENTER);
         label.setBounds(0, 10, 654, 40);
         frame.add(label);
-        final JLabel label3 = new JLabel(MetadataUtil.version + " - " + MetadataUtil.installerSplashes.get(rand.nextInt(MetadataUtil.installerSplashes.size())));
-        label3.setFont(label.getFont().deriveFont(12f));
+        final JLabel label3 = new JLabel(MetadataUtil.VERSION + " - " + MetadataUtil.INSTALLER_SPLASHES.get(rand.nextInt(MetadataUtil.INSTALLER_SPLASHES.size())));
+        label3.setFont(label.getFont().deriveFont(12F));
         label3.setHorizontalAlignment(SwingConstants.CENTER);
         label3.setBounds(0, 30, 654, 40);
         frame.add(label3);
         final JLabel label2 = new JLabel("\u00a92018 000");
-        label2.setFont(label2.getFont().deriveFont(12f));
+        label2.setFont(label2.getFont().deriveFont(12F));
         label2.setHorizontalAlignment(SwingConstants.CENTER);
         label2.setBounds(0, 360, 654, 20);
         frame.add(label2);
         final JTextField workDir = new JTextField(workingDirectory);
         workDir.setHorizontalAlignment(SwingConstants.CENTER);
         workDir.setBounds((654 / 2) - 150, 65, 300, 20);
+        // TODO Refactor
         workDir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -190,8 +199,7 @@ public class Installer {
                 if (minecraftDir.exists() && refreshList(workDirPath)) {
                     workingDirectory = workDirPath;
                 } else {
-                    if (minecraftDir.exists()) {
-                    } else {
+                    if (!minecraftDir.exists()) {
                         JOptionPane.showMessageDialog(null, "No directory / minecraft directory detected!\n", "Error", JOptionPane.INFORMATION_MESSAGE);
                     }
 
@@ -206,6 +214,7 @@ public class Installer {
         frame.add(scrollList);
         uninstall = new JButton("Uninstall ALL versions"); //uninstaller code
         uninstall.setBounds((654 / 2) - 100, 312, 200, 30);
+        // TODO Refactor
         uninstall.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -223,12 +232,12 @@ public class Installer {
 
                 JOptionPane.showMessageDialog(null, "Successfully uninstalled wrapper", "Success", JOptionPane.INFORMATION_MESSAGE);
                 refreshList(workingDirectory);
-                //System.exit(0);
             }
         });
         frame.add(uninstall);
         install = new JButton("Install"); //installation code
         install.setBounds((654 / 2) - 100, 270, 200, 40);
+        // TODO Refactor
         install.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -237,7 +246,9 @@ public class Installer {
                 final File libsDir = new File(directory, "libraries" + File.separator + "com" + File.separator + "zero");
 
                 if (libsDir.exists()) {
-                    deleteDirectory(libsDir); // Makes sure that the library gets reinstalled
+                    // Makes sure that the library gets reinstalled
+                    // TODO Add version checking?
+                    deleteDirectory(libsDir);
                 }
 
                 for (String version : versionList) {
@@ -283,7 +294,6 @@ public class Installer {
                             (FileOutputStream fos = new FileOutputStream(new File(wrapDir, versionWrapped + ".json"))) {
                             Files.copy(new File(versions, version + File.separator + version + ".jar").toPath(), new File(wrapDir, versionWrapped + ".jar").toPath(), StandardCopyOption.REPLACE_EXISTING);
                             fos.write(versionJson.toString().getBytes());
-                            fos.close();
                             final File jar = new File(Installer.class.getProtectionDomain().getCodeSource().getLocation().toURI());
                             Files.copy(jar.toPath(), new File(libDir, "retrowrapper-installer.jar").toPath(), StandardCopyOption.REPLACE_EXISTING);
                         } catch (IOException | URISyntaxException ee) {
@@ -297,7 +307,6 @@ public class Installer {
 
                 JOptionPane.showMessageDialog(null, "Successfully wrapped version\n" + finalVersions.toString(), "Success", JOptionPane.INFORMATION_MESSAGE);
                 refreshList(workingDirectory);
-                //System.exit(0);
             }
         });
         frame.add(install);
@@ -308,12 +317,7 @@ public class Installer {
     }
 
     public static void main(String[] args) {
-        try {
-            new Installer();
-        } catch (final Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Exception occured!\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        new Installer();
     }
 
     private static void deleteDirectory(File f) {

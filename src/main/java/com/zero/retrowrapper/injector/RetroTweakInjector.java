@@ -6,10 +6,10 @@ import static org.objectweb.asm.Opcodes.GOTO;
 import static org.objectweb.asm.Opcodes.INVOKESTATIC;
 import static org.objectweb.asm.Opcodes.TABLESWITCH;
 
+import java.awt.Frame;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
@@ -31,7 +31,7 @@ import org.objectweb.asm.tree.VarInsnNode;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
 
-public class RetroTweakInjector implements IClassTransformer {
+public final class RetroTweakInjector implements IClassTransformer {
     /**
      *
      * THIS IS MODIFIED VERSION OF INDEVVANILLATWEAKINJECTOR
@@ -39,7 +39,7 @@ public class RetroTweakInjector implements IClassTransformer {
      *
      */
 
-    @SuppressWarnings({ "deprecation", "unchecked" })
+    // TODO @Nullable?
     @Override
     public byte[] transform(final String name, final String transformedName, final byte[] bytesOld) {
         try {
@@ -51,6 +51,7 @@ public class RetroTweakInjector implements IClassTransformer {
             final ClassNode classNodeOld = new ClassNode();
             cr.accept(classNodeOld, ClassReader.EXPAND_FRAMES);
             final RetroTweakClassWriter cw = new RetroTweakClassWriter(0, classNodeOld.name.replace('/', '.'));
+            // TODO The linter doesn't like this for some reason
             final ClassVisitor s = new ClassVisitor(ASM4, cw) {};
             cr.accept(s, 0);
             final byte[] bytes = cw.toByteArray();
@@ -78,6 +79,7 @@ public class RetroTweakInjector implements IClassTransformer {
             }
 
             System.out.println("Probably the Minecraft class (it has run && is applet!): " + name);
+            @SuppressWarnings("unchecked")
             final ListIterator<AbstractInsnNode> iterator = runMethod.instructions.iterator();
             int firstSwitchJump = -1;
 
@@ -105,7 +107,7 @@ public class RetroTweakInjector implements IClassTransformer {
                         }
 
                         instruction = iterator.next();
-                        runMethod.instructions.insertBefore(instruction, new MethodInsnNode(INVOKESTATIC, "com/zero/retrowrapper/injector/RetroTweakInjector", "inject", "()Ljava/io/File;"));
+                        runMethod.instructions.insertBefore(instruction, new MethodInsnNode(INVOKESTATIC, "com/zero/retrowrapper/injector/RetroTweakInjector", "inject", "()Ljava/io/File;", false));
                         runMethod.instructions.insertBefore(instruction, new VarInsnNode(ASTORE, 2));
                     }
                 }
@@ -119,36 +121,29 @@ public class RetroTweakInjector implements IClassTransformer {
         }
     }
 
-    public static File inject() throws IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
+    // TODO What is this method used for?
+    /*private static File inject() throws IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
         System.out.println("Turning off ImageIO disk-caching");
         ImageIO.setUseCache(false);
         RetroTweakInjector.loadIconsOnFrames();
         System.out.println("Setting gameDir to: " + Launch.minecraftHome);
         return Launch.minecraftHome;
-    }
+    }*/
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static void loadIconsOnFrames() {
+    static void loadIconsOnFrames() {
         try {
-            final File e = new File(Launch.assetsDir, "icons/icon_16x16.png");
+            final File smallIcon = new File(Launch.assetsDir, "icons/icon_16x16.png");
             final File bigIcon = new File(Launch.assetsDir, "icons/icon_32x32.png");
-            System.out.println("Loading current icons for window from: " + e + " and " + bigIcon);
-//          Display.setIcon(new ByteBuffer[]{loadIcon(e), loadIcon(bigIcon)});
+            System.out.println("Loading current icons for window from: " + smallIcon + " and " + bigIcon);
+            // TODO Re-add?
+            //Display.setIcon(new ByteBuffer[]{loadIcon(e), loadIcon(bigIcon)});
             final java.awt.Frame[] frames = java.awt.Frame.getFrames();
 
             if (frames != null) {
-                final List icons = Arrays.asList(ImageIO.read(e), ImageIO.read(bigIcon));
-                final java.awt.Frame[] arg3 = frames;
-                final int arg4 = frames.length;
+                final List<BufferedImage> icons = Arrays.asList(ImageIO.read(smallIcon), ImageIO.read(bigIcon));
 
-                for (int arg5 = 0; arg5 < arg4; ++arg5) {
-                    final java.awt.Frame frame = arg3[arg5];
-
-                    try {
-                        frame.setIconImages(icons);
-                    } catch (final Throwable arg8) {
-                        arg8.printStackTrace();
-                    }
+                for (final Frame frame : frames) {
+                    frame.setIconImages(icons);
                 }
             }
         } catch (final IOException arg9) {
@@ -156,8 +151,8 @@ public class RetroTweakInjector implements IClassTransformer {
         }
     }
 
-    @SuppressWarnings("unused") //I'm pretty sure this is used...
-    private static ByteBuffer loadIcon(File iconFile) throws IOException {
+    // TODO Re-add?
+    /*private static ByteBuffer loadIcon(File iconFile) throws IOException {
         final BufferedImage icon = ImageIO.read(iconFile);
         final int[] rgb = icon.getRGB(0, 0, icon.getWidth(), icon.getHeight(), (int[]) null, 0, icon.getWidth());
         final ByteBuffer buffer = ByteBuffer.allocate(4 * rgb.length);
@@ -171,5 +166,5 @@ public class RetroTweakInjector implements IClassTransformer {
 
         buffer.flip();
         return buffer;
-    }
+    }*/
 }

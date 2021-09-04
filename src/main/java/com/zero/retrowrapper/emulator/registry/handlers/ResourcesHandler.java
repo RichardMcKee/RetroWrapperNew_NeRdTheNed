@@ -2,7 +2,6 @@ package com.zero.retrowrapper.emulator.registry.handlers;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,9 +15,8 @@ import com.eclipsesource.json.JsonValue;
 import com.zero.retrowrapper.emulator.ByteUtils;
 import com.zero.retrowrapper.emulator.RetroEmulator;
 import com.zero.retrowrapper.emulator.registry.EmulatorHandler;
-import com.zero.retrowrapper.emulator.registry.IHandler;
 
-public class ResourcesHandler extends EmulatorHandler implements IHandler {
+public final class ResourcesHandler extends EmulatorHandler {
     private static final byte[] SOUNDS_LIST =
         ("\nsound/step/wood4.ogg,0,1245702004000\n"
          + "sound/step/gravel3.ogg,0,1245702004000\n"
@@ -73,7 +71,8 @@ public class ResourcesHandler extends EmulatorHandler implements IHandler {
         }
     }
 
-    private byte[] getResourceByName(String res) throws FileNotFoundException, IOException {
+    // TODO @Nullable?
+    private byte[] getResourceByName(String res) throws IOException {
         final File resourceCache = new File(RetroEmulator.getInstance().getCacheDirectory(), res);
 
         if (resourceCache.exists()) {
@@ -97,7 +96,6 @@ public class ResourcesHandler extends EmulatorHandler implements IHandler {
             try
                 (FileOutputStream fos = new FileOutputStream(resourceCache)) {
                 fos.write(resourceBytes);
-                fos.close();
             }
 
             return resourceBytes;

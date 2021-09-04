@@ -4,7 +4,7 @@ import java.applet.Applet;
 import java.lang.reflect.Field;
 import java.util.Random;
 
-public class EmulatorConfig {
+public final class EmulatorConfig {
     private static EmulatorConfig instance;
 
     public Field minecraftField;
@@ -14,7 +14,9 @@ public class EmulatorConfig {
 
     public String mobClass;
 
-    public EmulatorConfig() {
+    private EmulatorConfig() {
+        // TODO Consider not creating new random for one-off use
+        // TODO Is this a good way to determine the port?
         port = new Random().nextInt(3000) + 25566;
     }
 
@@ -22,6 +24,7 @@ public class EmulatorConfig {
         return port;
     }
 
+    // TODO Is this threadsafe, and does it need to be?
     public static EmulatorConfig getInstance() {
         if (instance == null) {
             instance = new EmulatorConfig();

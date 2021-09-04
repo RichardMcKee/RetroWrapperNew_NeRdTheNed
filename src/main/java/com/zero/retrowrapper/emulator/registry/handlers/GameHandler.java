@@ -4,9 +4,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import com.zero.retrowrapper.emulator.registry.EmulatorHandler;
-import com.zero.retrowrapper.emulator.registry.IHandler;
 
-public class GameHandler extends EmulatorHandler implements IHandler {
+public final class GameHandler extends EmulatorHandler {
     public GameHandler() {
         super("/game/");
     }

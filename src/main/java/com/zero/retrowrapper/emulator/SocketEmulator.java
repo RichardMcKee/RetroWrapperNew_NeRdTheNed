@@ -9,7 +9,7 @@ import java.net.Socket;
 
 import com.zero.retrowrapper.emulator.registry.IHandler;
 
-public class SocketEmulator {
+public final class SocketEmulator {
     private final Socket socket;
 
     public SocketEmulator(Socket socket) {
@@ -41,7 +41,6 @@ public class SocketEmulator {
         byte[] data = null;
 
         if (length != -1) {
-            data = new byte[length];
             final ByteArrayOutputStream bos = new ByteArrayOutputStream();
             final byte[] buffer = new byte[8192];
             int read = 0;

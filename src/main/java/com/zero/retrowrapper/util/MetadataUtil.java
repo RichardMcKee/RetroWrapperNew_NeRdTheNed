@@ -7,11 +7,15 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
-public class MetadataUtil {
-    public static final String version = getVersion();
-    public static final List<String> installerSplashes = getSplashes();
+public final class MetadataUtil {
+    public static final String VERSION = getVersion();
+    public static final List<String> INSTALLER_SPLASHES = getSplashes();
 
-    private static final String getVersion() {
+    private MetadataUtil() {
+        // As this is a helper class, there should be no reason to instantiate an instance of it.
+    }
+
+    private static String getVersion() {
         try {
             return IOUtils.toString(ClassLoader.getSystemResourceAsStream("com/zero/retrowrapper/retrowrapperVersion.txt"), Charset.defaultCharset());
         } catch (final IOException e) {
@@ -19,7 +23,7 @@ public class MetadataUtil {
         }
     }
 
-    private static final List<String> getSplashes() {
+    private static List<String> getSplashes() {
         try {
             return IOUtils.readLines(ClassLoader.getSystemResourceAsStream("com/zero/retrowrapper/retrowrapperInstallerSplashes.txt"), Charset.defaultCharset());
         } catch (final IOException e) {

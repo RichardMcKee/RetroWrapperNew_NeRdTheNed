@@ -6,7 +6,7 @@ import java.util.List;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
-public class RetroTweaker implements ITweaker {
+public final class RetroTweaker implements ITweaker {
     private List<String> args;
 
     @Override

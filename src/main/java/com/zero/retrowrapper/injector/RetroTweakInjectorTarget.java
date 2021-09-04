@@ -24,7 +24,7 @@ import com.zero.retrowrapper.hack.HackThread;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
 
-public class RetroTweakInjectorTarget implements IClassTransformer {
+public final class RetroTweakInjectorTarget implements IClassTransformer {
     /**
      *
      * THIS IS MODIFIED VERSION OF ALPHAVANILLATWEAKINJECTOR
@@ -32,14 +32,12 @@ public class RetroTweakInjectorTarget implements IClassTransformer {
      *
      */
 
-    public RetroTweakInjectorTarget() {
-    }
-
     @Override
     public byte[] transform(final String name, final String transformedName, final byte[] bytes) {
         return bytes;
     }
 
+    // TODO can the throws be removed?
     public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         System.out.println("******************************");
         System.out.println("*     old mojang servers     *");
@@ -64,7 +62,7 @@ public class RetroTweakInjectorTarget implements IClassTransformer {
             }
 
             final Map<String, String> params = new HashMap<>();
-            final String username = args.length > 0 ? args[0] : "Player" + (System.currentTimeMillis() % 1000);
+            final String username = args.length > 0 ? args[0] : ("Player" + (System.currentTimeMillis() % 1000));
             final String sessionId = args.length > 1 ? args[1] : "-";
             params.put("username", username);
             params.put("sessionid", sessionId);
@@ -79,7 +77,7 @@ public class RetroTweakInjectorTarget implements IClassTransformer {
             for (final Field field : clazz.getDeclaredFields()) {
                 final String name = field.getType().getName();
 
-                if (!name.contains("awt") && !name.contains("java") && !"long".equals(name)) {
+                if (!name.contains("awt") && !name.contains("java") && !field.getType().equals(Long.TYPE)) {
                     System.out.println("Found likely Minecraft candidate: " + field);
                     EmulatorConfig.getInstance().minecraftField = field;
                     final Field fileField = getWorkingDirField(name);
@@ -91,7 +89,7 @@ public class RetroTweakInjectorTarget implements IClassTransformer {
                         Field appletField = null;
 
                         for (final Field f : mcObj.getClass().getDeclaredFields()) {
-                            if ("boolean".equals(f.getType().getName()) && Modifier.isPublic(f.getModifiers())) {
+                            if (f.getType().equals(Boolean.TYPE) && Modifier.isPublic(f.getModifiers())) {
                                 appletField = f;
                                 break;
                             }
@@ -162,7 +160,7 @@ public class RetroTweakInjectorTarget implements IClassTransformer {
         final Class<?> clazz = getaClass(name);
 
         for (final Field field : clazz.getDeclaredFields()) {
-            if (Modifier.isStatic(field.getModifiers()) && "java.io.File".equals(field.getType().getName())) {
+            if (Modifier.isStatic(field.getModifiers()) && field.getType().equals(java.io.File.class)) {
                 return field;
             }
         }

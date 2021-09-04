@@ -9,9 +9,8 @@ import java.io.OutputStream;
 import com.zero.retrowrapper.emulator.ByteUtils;
 import com.zero.retrowrapper.emulator.RetroEmulator;
 import com.zero.retrowrapper.emulator.registry.EmulatorHandler;
-import com.zero.retrowrapper.emulator.registry.IHandler;
 
-public class LoadHandler extends EmulatorHandler implements IHandler {
+public final class LoadHandler extends EmulatorHandler {
     public LoadHandler() {
         super("/level/load.html?id=");
     }

@@ -8,9 +8,8 @@ import java.net.URL;
 
 import com.zero.retrowrapper.emulator.ByteUtils;
 import com.zero.retrowrapper.emulator.registry.EmulatorHandler;
-import com.zero.retrowrapper.emulator.registry.IHandler;
 
-public class ResourcesHandlerBeta extends EmulatorHandler implements IHandler {
+public final class ResourcesHandlerBeta extends EmulatorHandler {
     public ResourcesHandlerBeta() {
         super("/MinecraftResources/");
     }

@@ -15,7 +15,7 @@ public abstract class EmulatorHandler implements IHandler {
 
     protected String url;
 
-    public EmulatorHandler(String url) {
+    protected EmulatorHandler(String url) {
         this.url = url;
     }
 

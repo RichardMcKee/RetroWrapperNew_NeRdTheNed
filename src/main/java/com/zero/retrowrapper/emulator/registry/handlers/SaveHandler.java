@@ -10,15 +10,13 @@ import java.io.OutputStream;
 import com.zero.retrowrapper.emulator.ByteUtils;
 import com.zero.retrowrapper.emulator.RetroEmulator;
 import com.zero.retrowrapper.emulator.registry.EmulatorHandler;
-import com.zero.retrowrapper.emulator.registry.IHandler;
 
-public class SaveHandler extends EmulatorHandler implements IHandler {
+public final class SaveHandler extends EmulatorHandler {
     public SaveHandler() {
         super("/level/save.html");
     }
 
     @Override
-    @SuppressWarnings("unused")
     public void handle(OutputStream os, String get, byte[] data) throws IOException {
         final DataInputStream dis = new DataInputStream(new ByteArrayInputStream(data));
         ByteUtils.readString(dis);
@@ -37,13 +35,11 @@ public class SaveHandler extends EmulatorHandler implements IHandler {
         try
             (FileOutputStream fos = new FileOutputStream(fileMap)) {
             fos.write(level);
-            fos.close();
         }
 
         try
             (FileOutputStream fos = new FileOutputStream(fileMapMeta)) {
             fos.write(levelName.getBytes());
-            fos.close();
         }
     }
 }

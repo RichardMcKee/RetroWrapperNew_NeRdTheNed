@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.zero.retrowrapper.emulator.EmulatorConfig;
 
-public class RetroTweakClassWriter extends ClassWriter {
+public final class RetroTweakClassWriter extends ClassWriter {
     private static final int CLASS = 7;
     private static final int FIELD = 9;
     private static final int METH = 10;
@@ -45,7 +45,8 @@ public class RetroTweakClassWriter extends ClassWriter {
         }
 
         for (final Item item : items) {
-            item.a = writer.c++;
+            item.a = writer.c;
+            writer.c++;
 
             if ((item.b == LONG) || (item.b == DOUBLE)) {
                 writer.c++;
@@ -66,7 +67,8 @@ public class RetroTweakClassWriter extends ClassWriter {
                 } else if (item.g.contains(".com")) {
                     System.out.println("Found URL!: " + item.g);
                     String finalstr = item.g;
-                    finalstr = (item.g.contains("https://") | item.g.contains("http://") ? "http://" : "") + "127.0.0.1:" + EmulatorConfig.getInstance().getPort() + item.g.replace(finalstr.split(".com")[0] + ".com", "");
+                    // TODO optimize
+                    finalstr = (item.g.contains("https://") || item.g.contains("http://") ? "http://" : "") + "127.0.0.1:" + EmulatorConfig.getInstance().getPort() + item.g.replace(finalstr.split(".com")[0] + ".com", "");
                     System.out.println("Replaced with: " + finalstr);
                     writer.d.putByte(UTF8).putUTF8(finalstr);
                 } else if (item.g.contains(".net")) {
@@ -76,6 +78,7 @@ public class RetroTweakClassWriter extends ClassWriter {
                     if ("minecraft.net".equals(finalstr)) {
                         finalstr = "127.0.0.1";
                     } else {
+                        // TODO optimize
                         finalstr = (item.g.contains("https://") ? "https://" : "") + (item.g.contains("http://") ? "http://" : "") + "127.0.0.1:" + EmulatorConfig.getInstance().getPort() + item.g.replace(finalstr.split(".net")[0] + ".net", "");
                     }
 

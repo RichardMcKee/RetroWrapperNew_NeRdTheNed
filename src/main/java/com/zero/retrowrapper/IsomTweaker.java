@@ -6,7 +6,7 @@ import java.util.List;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
-public class IsomTweaker implements ITweaker {
+public final class IsomTweaker implements ITweaker {
     private List<String> args;
 
     @Override

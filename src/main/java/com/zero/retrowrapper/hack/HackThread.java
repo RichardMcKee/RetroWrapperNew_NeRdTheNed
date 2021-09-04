@@ -16,8 +16,8 @@ import javax.swing.WindowConstants;
 import com.zero.retrowrapper.emulator.EmulatorConfig;
 import com.zero.retrowrapper.injector.RetroTweakInjectorTarget;
 
-public class HackThread extends Thread implements Runnable {
-    public JFrame frame;
+public final class HackThread extends Thread {
+    // TODO Refactor
     public JLabel label;
 
     @Override
@@ -30,7 +30,7 @@ public class HackThread extends Thread implements Runnable {
             e.printStackTrace();
         }
 
-        frame = new JFrame("Retrowrapper");
+        final JFrame frame = new JFrame("Retrowrapper");
         final Dimension dim = new Dimension(654, 310);
         frame.setPreferredSize(dim);
         frame.setMinimumSize(dim);
@@ -104,7 +104,7 @@ public class HackThread extends Thread implements Runnable {
             System.out.println("Entity class: " + player.entityClass.getName());
             player.setAABB();
 
-            if (player.aabb != null) {
+            if (player.isAABBNonNull()) {
                 while (true) {
                     player.tick();
                     Thread.sleep(100);
@@ -115,7 +115,7 @@ public class HackThread extends Thread implements Runnable {
         }
     }
 
-    private Class<?> getMostSuper(Class<?> mobClass) {
+    private static Class<?> getMostSuper(Class<?> mobClass) {
         while (true) {
             if (mobClass.getSuperclass().equals(Object.class)) {
                 break;

@@ -8,7 +8,7 @@ import com.zero.retrowrapper.emulator.registry.EmulatorRegistry;
 
 import net.minecraft.launchwrapper.Launch;
 
-public class RetroEmulator extends Thread implements Runnable {
+public final class RetroEmulator extends Thread {
     private static RetroEmulator instance;
 
     private EmulatorRegistry registry;
@@ -18,6 +18,7 @@ public class RetroEmulator extends Thread implements Runnable {
 
     @Override
     public void run() {
+        // TODO Is this threadsafe, and does it need to be?
         instance = this;
         System.out.println("Old servers emulator is running!");
         registry = new EmulatorRegistry();
@@ -37,10 +38,12 @@ public class RetroEmulator extends Thread implements Runnable {
                 try {
                     new SocketEmulator(socket).parseIncoming();
                 } catch (final Exception e) {
+                    // TODO Better error handling
                     e.printStackTrace();
                 }
             }
         } catch (final Exception e) {
+            // TODO Better error handling
             e.printStackTrace();
         }
     }

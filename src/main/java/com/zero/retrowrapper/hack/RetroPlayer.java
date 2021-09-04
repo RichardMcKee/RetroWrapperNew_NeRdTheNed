@@ -3,14 +3,14 @@ package com.zero.retrowrapper.hack;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-public class RetroPlayer {
-    public Field x, y, z, x2, y2, z2;
-    public double ax, ay, az;
-    public Object aabb;
+public final class RetroPlayer {
+    private Field x, y, z, x2, y2, z2;
+    private double ax, ay, az;
+    private Object aabb;
     public Class<?> entityClass;
     public Object playerObj;
 
-    public HackThread thread;
+    private final HackThread thread;
     public Field playerField;
     public Object minecraft;
     private boolean modeFloat;
@@ -41,7 +41,7 @@ public class RetroPlayer {
 
         for (final Field f : entityClass.getDeclaredFields()) {
             if (!flag2) {
-                if ("float".equals(f.getType().getName())) {
+                if (f.getType().equals(Float.TYPE)) {
                     flag2 = true;
                 }
             } else if (!f.getType().isPrimitive()) {
@@ -54,8 +54,8 @@ public class RetroPlayer {
             int doubleCount = 0;
 
             for (final Field f : aabb.getClass().getDeclaredFields()) {
-                if (Modifier.isPublic(f.getModifiers()) && ("double".equals(f.getType().getName()) || "float".equals(f.getType().getName()))) {
-                    if ("float".equals(f.getType().getName())) {
+                if (Modifier.isPublic(f.getModifiers()) && (f.getType().equals(Double.TYPE) || f.getType().equals(Float.TYPE))) {
+                    if (f.getType().equals(Float.TYPE)) {
                         modeFloat = true;
                     }
 
@@ -92,6 +92,10 @@ public class RetroPlayer {
                 }
             }
         }
+    }
+
+    public boolean isAABBNonNull() {
+        return aabb != null;
     }
 
     private double getX() throws IllegalArgumentException, IllegalAccessException {

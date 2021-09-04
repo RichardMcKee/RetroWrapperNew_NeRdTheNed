@@ -9,7 +9,7 @@ import java.util.Map;
 
 import com.zero.retrowrapper.emulator.EmulatorConfig;
 
-public class LauncherFake extends Applet implements AppletStub {
+public final class LauncherFake extends Applet implements AppletStub {
     private static final long serialVersionUID = 1L;
 
     private Map<String, String> params = new HashMap<>();
@@ -19,7 +19,9 @@ public class LauncherFake extends Applet implements AppletStub {
     }
 
     @Override
-    public void appletResize(int width, int height) {}
+    public void appletResize(int width, int height) {
+        // This space left intentionally blank
+    }
 
     @Override
     public void setSize(int width, int height) {
@@ -34,17 +36,15 @@ public class LauncherFake extends Applet implements AppletStub {
 
     @Override
     public URL getDocumentBase() {
-        try {
-            return new URL("http://127.0.0.1:" + EmulatorConfig.getInstance().getPort() + "/game/");
-        } catch (final MalformedURLException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return getBase();
     }
 
     @Override
     public URL getCodeBase() {
+        return getBase();
+    }
+
+    private static URL getBase() {
         try {
             return new URL("http://127.0.0.1:" + EmulatorConfig.getInstance().getPort() + "/game/");
         } catch (final MalformedURLException e) {

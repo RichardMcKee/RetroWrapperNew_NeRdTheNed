@@ -24,9 +24,8 @@ import com.eclipsesource.json.JsonValue;
 import com.zero.retrowrapper.emulator.ByteUtils;
 import com.zero.retrowrapper.emulator.RetroEmulator;
 import com.zero.retrowrapper.emulator.registry.EmulatorHandler;
-import com.zero.retrowrapper.emulator.registry.IHandler;
 
-public class SkinHandler extends EmulatorHandler implements IHandler {
+public final class SkinHandler extends EmulatorHandler {
     private final HashMap<String, byte[]> skinsCache = new HashMap<>();
 
     public SkinHandler(String url) {
@@ -56,8 +55,8 @@ public class SkinHandler extends EmulatorHandler implements IHandler {
         }
     }
 
-    private byte[] downloadSkin(String username) throws IOException {
-        //using json now
+    // TODO @Nullable?
+    private static byte[] downloadSkin(String username) throws IOException {
         final File skinCache = new File(RetroEmulator.getInstance().getCacheDirectory(), username + ".png");
 
         try
@@ -91,7 +90,6 @@ public class SkinHandler extends EmulatorHandler implements IHandler {
                 try
                     (FileOutputStream fos = new FileOutputStream(skinCache)) {
                     fos.write(skinBytes);
-                    fos.close();
                 }
 
                 return skinBytes;

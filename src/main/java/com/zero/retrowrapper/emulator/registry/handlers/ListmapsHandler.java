@@ -7,9 +7,8 @@ import java.util.Scanner;
 
 import com.zero.retrowrapper.emulator.RetroEmulator;
 import com.zero.retrowrapper.emulator.registry.EmulatorHandler;
-import com.zero.retrowrapper.emulator.registry.IHandler;
 
-public class ListmapsHandler extends EmulatorHandler implements IHandler {
+public final class ListmapsHandler extends EmulatorHandler {
     public ListmapsHandler() {
         super("/listmaps.jsp");
     }

@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
 
-public class _4KTweakInjector implements IClassTransformer {
+public final class _4KTweakInjector implements IClassTransformer {
     /**
      *
      * THIS IS MODIFIED VERSION OF ALPHAVANILLATWEAKINJECTOR
@@ -29,6 +29,7 @@ public class _4KTweakInjector implements IClassTransformer {
         return bytes;
     }
 
+    // TODO can the throws be removed?
     public static void main(String[] args) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException {
         final Class<?> clazz = getaClass("M");
         System.out.println("_4KTweakInjector.class.getClassLoader() = " + _4KTweakInjector.class.getClassLoader());

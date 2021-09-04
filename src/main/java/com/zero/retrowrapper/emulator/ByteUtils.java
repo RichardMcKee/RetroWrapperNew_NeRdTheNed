@@ -5,7 +5,11 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class ByteUtils {
+public final class ByteUtils {
+    private ByteUtils() {
+        // As this is a helper class, there should be no reason to instantiate an instance of it.
+    }
+
     public static String readString(DataInputStream dis) throws IOException {
         final int len = dis.readUnsignedShort();
         System.out.println(len);
@@ -33,7 +37,7 @@ public class ByteUtils {
         return bos.toByteArray();
     }
 
-    public static String readLine(DataInputStream dis) throws IOException {
+    public static String readLine(InputStream dis) throws IOException {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
         while (true) {
