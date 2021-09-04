@@ -19,6 +19,10 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 8
+    - name: Install advancecomp
+      run: sudo apt-get install advancecomp
+    - name: Install strip-nondeterminism
+      run: sudo apt-get install strip-nondeterminism
     - name: Build with Gradle
       env:
         GITHUB_ACTIONS_JDK_7: ${{ steps.setup_jdk_7.outputs.path }}
@@ -29,6 +33,12 @@ jobs:
         dependencies-cache-enabled: true
         configuration-cache-enabled: true
         arguments: build
+    - name: Rezip mod .jar files to remove directory entries
+      run: bash removeDirectoryEntries.sh
+    - name: Run strip-nondeterminism on built .jar files
+      run: strip-nondeterminism build/libs/*.jar
+    - name: Run advzip (-i 99) on built .jar files
+      run: advzip --shrink-insane -kzi 99 -p build/libs/*.jar
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
