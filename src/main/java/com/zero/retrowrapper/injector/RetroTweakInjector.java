@@ -121,14 +121,13 @@ public final class RetroTweakInjector implements IClassTransformer {
         }
     }
 
-    // TODO What is this method used for?
-    /*private static File inject() throws IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
+    public static File inject() throws IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
         System.out.println("Turning off ImageIO disk-caching");
         ImageIO.setUseCache(false);
         RetroTweakInjector.loadIconsOnFrames();
         System.out.println("Setting gameDir to: " + Launch.minecraftHome);
         return Launch.minecraftHome;
-    }*/
+    }
 
     static void loadIconsOnFrames() {
         try {
