@@ -10,7 +10,7 @@ import java.awt.Frame;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -130,23 +130,22 @@ public final class RetroTweakInjector implements IClassTransformer {
     }
 
     static void loadIconsOnFrames() {
-        try {
-            final File smallIcon = new File(Launch.assetsDir, "icons/icon_16x16.png");
-            final File bigIcon = new File(Launch.assetsDir, "icons/icon_32x32.png");
-            System.out.println("Loading current icons for window from: " + smallIcon + " and " + bigIcon);
-            // TODO Re-add?
-            //Display.setIcon(new ByteBuffer[]{loadIcon(e), loadIcon(bigIcon)});
-            final java.awt.Frame[] frames = java.awt.Frame.getFrames();
+        final File smallIcon = new File(Launch.assetsDir, "icons/icon_16x16.png");
+        final File bigIcon = new File(Launch.assetsDir, "icons/icon_32x32.png");
+        System.out.println("Loading current icons for window from: " + smallIcon + " and " + bigIcon);
+        // TODO Re-add?
+        //Display.setIcon(new ByteBuffer[]{loadIcon(e), loadIcon(bigIcon)});
+        final java.awt.Frame[] frames = java.awt.Frame.getFrames();
 
-            if (frames != null) {
-                final List<BufferedImage> icons = Arrays.asList(ImageIO.read(smallIcon), ImageIO.read(bigIcon));
+        if (frames != null) {
+            final List<BufferedImage> icons = new ArrayList<>();
+            tryAddIcons(icons, smallIcon, bigIcon);
 
+            if (!icons.isEmpty()) {
                 for (final Frame frame : frames) {
                     frame.setIconImages(icons);
                 }
             }
-        } catch (final IOException arg9) {
-            arg9.printStackTrace();
         }
     }
 
@@ -166,4 +165,20 @@ public final class RetroTweakInjector implements IClassTransformer {
         buffer.flip();
         return buffer;
     }*/
+
+    private static void tryAddIcons(List<BufferedImage> iconList, File... icons) {
+        for (final File icon : icons) {
+            if (icon.exists() && icon.isFile()) {
+                try {
+                    final BufferedImage iconImage = ImageIO.read(icon);
+                    iconList.add(iconImage);
+                } catch (final IOException e) {
+                    // TODO Better error handling
+                    e.printStackTrace();
+                }
+            } else {
+                System.out.println("Icon " + icon + " does not exist or is not a file!");
+            }
+        }
+    }
 }
