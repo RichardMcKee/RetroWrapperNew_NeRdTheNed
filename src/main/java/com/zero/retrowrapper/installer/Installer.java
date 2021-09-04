@@ -300,7 +300,7 @@ public final class Installer {
                     }
                 }
 
-                JOptionPane.showMessageDialog(null, "Successfully wrapped version\n" + finalVersions.toString(), "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, (versionList.size() > 1 ? "Successfully wrapped versions\n" : "Successfully wrapped version\n") + finalVersions.toString(), "Success", JOptionPane.INFORMATION_MESSAGE);
                 refreshList(workingDirectory);
             }
         });
