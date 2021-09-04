@@ -1,5 +1,6 @@
 package com.zero.retrowrapper.installer;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -22,8 +23,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -55,6 +58,29 @@ public final class Installer {
 
     private static DefaultListModel<String> model = new DefaultListModel<>();
     private static JList<String> list = new JList<>(model);
+
+    private static void addJComponentCentered(JFrame frame, JComponent component) {
+        component.setAlignmentX(Component.CENTER_ALIGNMENT);
+        component.setAlignmentY(Component.CENTER_ALIGNMENT);
+        frame.add(component);
+    }
+
+    private static void addJButtonCentered(JFrame frame, JButton component) {
+        component.setHorizontalAlignment(SwingConstants.CENTER);
+        component.setVerticalAlignment(SwingConstants.CENTER);
+        addJComponentCentered(frame, component);
+    }
+
+    private static void addJLabelCentered(JFrame frame, JLabel component) {
+        component.setHorizontalAlignment(SwingConstants.CENTER);
+        component.setVerticalAlignment(SwingConstants.CENTER);
+        addJComponentCentered(frame, component);
+    }
+
+    private static void addJTextFieldCentered(JFrame frame, JTextField component) {
+        component.setHorizontalAlignment(SwingConstants.CENTER);
+        addJComponentCentered(frame, component);
+    }
 
     private static String defaultWorkingDirectory() {
         if (SystemUtils.IS_OS_WINDOWS) { // windows uses the %appdata%/.minecraft structure
@@ -167,28 +193,20 @@ public final class Installer {
 
         final JFrame frame = new JFrame("Retrowrapper - NeRd Fork");
         frame.setPreferredSize(new Dimension(654, 420));
-        frame.setLayout(null);
+        frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        // TODO Allow resizing
-        frame.setResizable(false);
-        final JLabel label = new JLabel("Retrowrapper Installer");
-        label.setFont(label.getFont().deriveFont(20F).deriveFont(Font.BOLD));
-        label.setHorizontalAlignment(SwingConstants.CENTER);
-        label.setBounds(0, 10, 654, 40);
-        frame.add(label);
-        final JLabel label3 = new JLabel(MetadataUtil.VERSION + " - " + MetadataUtil.INSTALLER_SPLASHES.get(rand.nextInt(MetadataUtil.INSTALLER_SPLASHES.size())));
-        label3.setFont(label.getFont().deriveFont(12F));
-        label3.setHorizontalAlignment(SwingConstants.CENTER);
-        label3.setBounds(0, 30, 654, 40);
-        frame.add(label3);
-        final JLabel label2 = new JLabel("\u00a92018 000");
-        label2.setFont(label2.getFont().deriveFont(12F));
-        label2.setHorizontalAlignment(SwingConstants.CENTER);
-        label2.setBounds(0, 360, 654, 20);
-        frame.add(label2);
+        frame.setResizable(true);
+        // Installer label
+        final JLabel installerLabel = new JLabel("Retrowrapper Installer");
+        installerLabel.setFont(installerLabel.getFont().deriveFont(20F).deriveFont(Font.BOLD));
+        addJLabelCentered(frame, installerLabel);
+        // Version label
+        final JLabel versionLabel = new JLabel(MetadataUtil.VERSION + " - " + MetadataUtil.INSTALLER_SPLASHES.get(rand.nextInt(MetadataUtil.INSTALLER_SPLASHES.size())));
+        versionLabel.setFont(installerLabel.getFont().deriveFont(12F));
+        addJLabelCentered(frame, versionLabel);
+        // Working directory text field
         final JTextField workDir = new JTextField(workingDirectory);
-        workDir.setHorizontalAlignment(SwingConstants.CENTER);
-        workDir.setBounds((654 / 2) - 150, 65, 300, 20);
+        workDir.setMaximumSize(new Dimension(300, 20));
         // TODO Refactor
         workDir.addActionListener(new ActionListener() {
             @Override
@@ -208,35 +226,12 @@ public final class Installer {
                 }
             }
         });
-        frame.add(workDir);
+        addJTextFieldCentered(frame, workDir);
+        // List of versions that can be wrapper
         final JScrollPane scrollList = new JScrollPane(list);
-        scrollList.setBounds((654 / 2) - 150, 100, 300, 140);
-        frame.add(scrollList);
-        uninstall = new JButton("Uninstall ALL versions"); //uninstaller code
-        uninstall.setBounds((654 / 2) - 100, 312, 200, 30);
-        // TODO Refactor
-        uninstall.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                for (final File f : directories) {
-                    if (f.isDirectory() && f.getName().contains("-wrapped")) {
-                        deleteDirectory(f);
-                    }
-                }
-
-                final File libDir = new File(directory, "libraries" + File.separator + "com" + File.separator + "zero");
-
-                if (libDir.exists()) {
-                    deleteDirectory(libDir);
-                }
-
-                JOptionPane.showMessageDialog(null, "Successfully uninstalled wrapper", "Success", JOptionPane.INFORMATION_MESSAGE);
-                refreshList(workingDirectory);
-            }
-        });
-        frame.add(uninstall);
+        addJComponentCentered(frame, scrollList);
+        // Install button
         install = new JButton("Install"); //installation code
-        install.setBounds((654 / 2) - 100, 270, 200, 40);
         // TODO Refactor
         install.addActionListener(new ActionListener() {
             @Override
@@ -309,11 +304,38 @@ public final class Installer {
                 refreshList(workingDirectory);
             }
         });
-        frame.add(install);
+        addJButtonCentered(frame, install);
+        // Uninstall button
+        uninstall = new JButton("Uninstall ALL versions"); //uninstaller code
+        // TODO Refactor
+        uninstall.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for (final File f : directories) {
+                    if (f.isDirectory() && f.getName().contains("-wrapped")) {
+                        deleteDirectory(f);
+                    }
+                }
+
+                final File libDir = new File(directory, "libraries" + File.separator + "com" + File.separator + "zero");
+
+                if (libDir.exists()) {
+                    deleteDirectory(libDir);
+                }
+
+                JOptionPane.showMessageDialog(null, "Successfully uninstalled wrapper", "Success", JOptionPane.INFORMATION_MESSAGE);
+                refreshList(workingDirectory);
+            }
+        });
+        addJButtonCentered(frame, uninstall);
+        // Copyright label
+        final JLabel copyrightLabel = new JLabel("\u00a92018 000");
+        copyrightLabel.setFont(copyrightLabel.getFont().deriveFont(12F));
+        addJLabelCentered(frame, copyrightLabel);
+        refreshList(workingDirectory);
         frame.pack();
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
-        refreshList(workingDirectory);
     }
 
     public static void main(String[] args) {
