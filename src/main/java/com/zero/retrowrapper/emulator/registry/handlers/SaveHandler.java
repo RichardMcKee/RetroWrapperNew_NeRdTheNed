@@ -9,7 +9,7 @@ import java.io.OutputStream;
 
 import com.zero.retrowrapper.emulator.RetroEmulator;
 import com.zero.retrowrapper.emulator.registry.EmulatorHandler;
-import com.zero.retrowrapper.util.ByteUtils;
+import com.zero.retrowrapper.util.ByteUtil;
 
 public final class SaveHandler extends EmulatorHandler {
     public SaveHandler() {
@@ -19,9 +19,9 @@ public final class SaveHandler extends EmulatorHandler {
     @Override
     public void handle(OutputStream os, String get, byte[] data) throws IOException {
         final DataInputStream dis = new DataInputStream(new ByteArrayInputStream(data));
-        ByteUtils.readString(dis);
-        ByteUtils.readString(dis);
-        final String levelName = ByteUtils.readString(dis);
+        ByteUtil.readString(dis);
+        ByteUtil.readString(dis);
+        final String levelName = ByteUtil.readString(dis);
         final byte id = dis.readByte();
         final int levelLength = dis.readInt();
         System.out.println(levelLength + ";" + data.length);

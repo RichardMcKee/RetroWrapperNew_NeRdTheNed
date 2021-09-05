@@ -7,9 +7,23 @@ import java.nio.ByteBuffer;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.lang3.SystemUtils;
+
 import net.minecraft.launchwrapper.Launch;
 
-public class FileUtils {
+public class FileUtil {
+    public static String defaultMinecraftDirectory() {
+        if (SystemUtils.IS_OS_WINDOWS) { // windows uses the %appdata%/.minecraft structure
+            return System.getenv("AppData") + File.separator + ".minecraft";
+        }
+
+        if (SystemUtils.IS_OS_MAC) { // mac os uses %user%/Library/Library/Application Support/minecraft
+            return System.getProperty("user.home") + File.separator + "Library" + File.separator + "Application Support" + File.separator + "minecraft";
+        }
+
+        return System.getProperty("user.home") + File.separator + ".minecraft";
+    }
+
     // TODO Re-add?
     public static ByteBuffer loadIcon(File iconFile) throws IOException {
         final BufferedImage icon = ImageIO.read(iconFile);
@@ -46,7 +60,7 @@ public class FileUtils {
         return tryFindFirstFile(oldLocation, virtualPreAssets, virtualLegacyAssets);
     }
 
-    private FileUtils() {
+    private FileUtil() {
         // As this is a helper class, there should be no reason to instantiate an instance of it.
     }
 }

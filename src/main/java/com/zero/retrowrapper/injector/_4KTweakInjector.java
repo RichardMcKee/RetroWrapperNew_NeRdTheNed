@@ -13,7 +13,7 @@ import java.util.HashMap;
 
 import javax.swing.JPanel;
 
-import com.zero.retrowrapper.util.SwingUtils;
+import com.zero.retrowrapper.util.SwingUtil;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
@@ -74,7 +74,7 @@ public final class _4KTweakInjector implements IClassTransformer {
                 applet.stop();
             }
         });
-        SwingUtils.loadIconsOnFrames();
+        SwingUtil.loadIconsOnFrames();
     }
 
     private static Class<?> getaClass(String name) throws ClassNotFoundException {

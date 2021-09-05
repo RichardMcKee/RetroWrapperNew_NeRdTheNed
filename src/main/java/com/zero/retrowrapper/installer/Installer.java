@@ -31,13 +31,13 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.SystemUtils;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
-import com.zero.retrowrapper.util.MetadataUtils;
-import com.zero.retrowrapper.util.SwingUtils;
+import com.zero.retrowrapper.util.FileUtil;
+import com.zero.retrowrapper.util.MetadataUtil;
+import com.zero.retrowrapper.util.SwingUtil;
 
 public final class Installer {
 
@@ -53,18 +53,6 @@ public final class Installer {
 
     private static DefaultListModel<String> model = new DefaultListModel<>();
     private static JList<String> list = new JList<>(model);
-
-    private static String defaultWorkingDirectory() {
-        if (SystemUtils.IS_OS_WINDOWS) { // windows uses the %appdata%/.minecraft structure
-            return System.getenv("AppData") + File.separator + ".minecraft";
-        }
-
-        if (SystemUtils.IS_OS_MAC) { // mac os uses %user%/Library/Library/Application Support/minecraft
-            return System.getProperty("user.home") + File.separator + "Library" + File.separator + "Application Support" + File.separator + "minecraft";
-        }
-
-        return System.getProperty("user.home") + File.separator + ".minecraft";
-    }
 
     private static boolean refreshList(String givenDirectory) {
         int versionCount = 0;
@@ -154,7 +142,7 @@ public final class Installer {
     // TODO Refactor parts into separate method
     // TODO The installer can take a very long time to start up when there are large amounts of instances
     private Installer() {
-        workingDirectory = defaultWorkingDirectory();
+        workingDirectory = FileUtil.defaultMinecraftDirectory();
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -171,11 +159,11 @@ public final class Installer {
         // Installer label
         final JLabel installerLabel = new JLabel("Retrowrapper Installer");
         installerLabel.setFont(installerLabel.getFont().deriveFont(20F).deriveFont(Font.BOLD));
-        SwingUtils.addJLabelCentered(frame, installerLabel);
+        SwingUtil.addJLabelCentered(frame, installerLabel);
         // Version label
-        final JLabel versionLabel = new JLabel(MetadataUtils.VERSION + " - " + MetadataUtils.INSTALLER_SPLASHES.get(rand.nextInt(MetadataUtils.INSTALLER_SPLASHES.size())));
+        final JLabel versionLabel = new JLabel(MetadataUtil.VERSION + " - " + MetadataUtil.INSTALLER_SPLASHES.get(rand.nextInt(MetadataUtil.INSTALLER_SPLASHES.size())));
         versionLabel.setFont(installerLabel.getFont().deriveFont(12F));
-        SwingUtils.addJLabelCentered(frame, versionLabel);
+        SwingUtil.addJLabelCentered(frame, versionLabel);
         // Working directory text field
         final JTextField workDir = new JTextField(workingDirectory);
         workDir.setMaximumSize(new Dimension(300, 20));
@@ -198,10 +186,10 @@ public final class Installer {
                 }
             }
         });
-        SwingUtils.addJTextFieldCentered(frame, workDir);
+        SwingUtil.addJTextFieldCentered(frame, workDir);
         // List of versions that can be wrapper
         final JScrollPane scrollList = new JScrollPane(list);
-        SwingUtils.addJComponentCentered(frame, scrollList);
+        SwingUtil.addJComponentCentered(frame, scrollList);
         // Install button
         install = new JButton("Install"); //installation code
         // TODO Refactor
@@ -276,7 +264,7 @@ public final class Installer {
                 refreshList(workingDirectory);
             }
         });
-        SwingUtils.addJButtonCentered(frame, install);
+        SwingUtil.addJButtonCentered(frame, install);
         // Uninstall button
         uninstall = new JButton("Uninstall ALL versions"); //uninstaller code
         // TODO Refactor
@@ -299,11 +287,11 @@ public final class Installer {
                 refreshList(workingDirectory);
             }
         });
-        SwingUtils.addJButtonCentered(frame, uninstall);
+        SwingUtil.addJButtonCentered(frame, uninstall);
         // Copyright label
         final JLabel copyrightLabel = new JLabel("\u00a92018 000");
         copyrightLabel.setFont(copyrightLabel.getFont().deriveFont(12F));
-        SwingUtils.addJLabelCentered(frame, copyrightLabel);
+        SwingUtil.addJLabelCentered(frame, copyrightLabel);
         refreshList(workingDirectory);
         frame.pack();
         frame.setVisible(true);

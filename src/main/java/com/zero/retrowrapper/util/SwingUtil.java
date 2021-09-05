@@ -16,7 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-public class SwingUtils {
+public class SwingUtil {
     public static void addJButtonCentered(JFrame frame, JButton component) {
         component.setHorizontalAlignment(SwingConstants.CENTER);
         component.setVerticalAlignment(SwingConstants.CENTER);
@@ -42,8 +42,8 @@ public class SwingUtils {
 
     public static void loadIconsOnFrames() {
         final List<File> iconList = new ArrayList<>();
-        final File[] files = { FileUtils.tryFindResourceFile("icons/icon_16x16.png"), FileUtils.tryFindResourceFile("icons/icon_32x32.png") };
-        CollectionUtils.addNonNullToCollection(iconList, files);
+        final File[] files = { FileUtil.tryFindResourceFile("icons/icon_16x16.png"), FileUtil.tryFindResourceFile("icons/icon_32x32.png") };
+        CollectionUtil.addNonNullToCollection(iconList, files);
 
         if (!iconList.isEmpty()) {
             System.out.println("Loading current icons for window from: " + iconList);
@@ -75,7 +75,7 @@ public class SwingUtils {
         }
     }
 
-    private SwingUtils() {
+    private SwingUtil() {
         // As this is a helper class, there should be no reason to instantiate an instance of it.
     }
 }

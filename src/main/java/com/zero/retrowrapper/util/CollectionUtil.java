@@ -2,7 +2,7 @@ package com.zero.retrowrapper.util;
 
 import java.util.Collection;
 
-public final class CollectionUtils {
+public final class CollectionUtil {
     @SafeVarargs
     public static <T> void addNonNullToCollection(Collection<T> collection, T... toAdd) {
         for (final T entryToAdd : toAdd) {
@@ -12,7 +12,7 @@ public final class CollectionUtils {
         }
     }
 
-    private CollectionUtils() {
+    private CollectionUtil() {
         // As this is a helper class, there should be no reason to instantiate an instance of it.
     }
 }

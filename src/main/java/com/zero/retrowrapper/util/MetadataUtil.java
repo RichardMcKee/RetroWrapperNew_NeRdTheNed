@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
-public final class MetadataUtils {
+public final class MetadataUtil {
     public static final List<String> INSTALLER_SPLASHES = getSplashes();
     public static final String VERSION = getVersion();
 
@@ -29,7 +29,7 @@ public final class MetadataUtils {
         }
     }
 
-    private MetadataUtils() {
+    private MetadataUtil() {
         // As this is a helper class, there should be no reason to instantiate an instance of it.
     }
 }

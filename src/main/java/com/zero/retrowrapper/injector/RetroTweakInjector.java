@@ -23,7 +23,7 @@ import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.TableSwitchInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
-import com.zero.retrowrapper.util.SwingUtils;
+import com.zero.retrowrapper.util.SwingUtil;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
@@ -124,7 +124,7 @@ public final class RetroTweakInjector implements IClassTransformer {
     public static File inject() throws IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
         System.out.println("Turning off ImageIO disk-caching");
         ImageIO.setUseCache(false);
-        SwingUtils.loadIconsOnFrames();
+        SwingUtil.loadIconsOnFrames();
         System.out.println("Setting gameDir to: " + Launch.minecraftHome);
         return Launch.minecraftHome;
     }

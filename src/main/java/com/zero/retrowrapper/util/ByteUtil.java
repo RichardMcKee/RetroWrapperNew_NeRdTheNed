@@ -5,7 +5,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public final class ByteUtils {
+public final class ByteUtil {
     public static String readLine(InputStream dis) throws IOException {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
@@ -30,7 +30,7 @@ public final class ByteUtils {
         return new String(bytes);
     }
 
-    private ByteUtils() {
+    private ByteUtil() {
         // As this is a helper class, there should be no reason to instantiate an instance of it.
     }
 }

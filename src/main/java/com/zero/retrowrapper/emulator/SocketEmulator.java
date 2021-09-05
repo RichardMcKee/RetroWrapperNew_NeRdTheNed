@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 import com.zero.retrowrapper.emulator.registry.IHandler;
-import com.zero.retrowrapper.util.ByteUtils;
+import com.zero.retrowrapper.util.ByteUtil;
 
 public final class SocketEmulator {
     private final Socket socket;
@@ -26,7 +26,7 @@ public final class SocketEmulator {
         int limit = 0;
 
         while (limit < 20) {
-            final String line = ByteUtils.readLine(dis).trim();
+            final String line = ByteUtil.readLine(dis).trim();
 
             if (limit == 0) {
                 get = line.split(" ")[1];
