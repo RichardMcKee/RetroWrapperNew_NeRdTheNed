@@ -20,6 +20,7 @@ import javax.swing.JPanel;
 import com.zero.retrowrapper.emulator.EmulatorConfig;
 import com.zero.retrowrapper.emulator.RetroEmulator;
 import com.zero.retrowrapper.hack.HackThread;
+import com.zero.retrowrapper.util.SwingUtils;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
@@ -149,7 +150,7 @@ public final class RetroTweakInjectorTarget implements IClassTransformer {
                 applet.stop();
             }
         });
-        RetroTweakInjector.loadIconsOnFrames();
+        SwingUtils.loadIconsOnFrames();
     }
 
     public static Class<?> getaClass(String name) throws ClassNotFoundException {

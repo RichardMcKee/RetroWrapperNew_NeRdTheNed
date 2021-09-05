@@ -16,12 +16,12 @@ import java.util.HashMap;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
-import com.zero.retrowrapper.emulator.ByteUtils;
 import com.zero.retrowrapper.emulator.RetroEmulator;
 import com.zero.retrowrapper.emulator.registry.EmulatorHandler;
 
@@ -85,7 +85,7 @@ public final class SkinHandler extends EmulatorHandler {
                 final String skinURL = skin.get("url").asString();
                 System.out.println(skinURL);
                 final InputStream is = new URL(skinURL).openStream();
-                final byte[] skinBytes = ByteUtils.readFully(is);
+                final byte[] skinBytes = IOUtils.toByteArray(is);
 
                 try
                     (FileOutputStream fos = new FileOutputStream(skinCache)) {
@@ -100,7 +100,7 @@ public final class SkinHandler extends EmulatorHandler {
             if (skinCache.exists()) {
                 try
                     (FileInputStream fis = new FileInputStream(skinCache)) {
-                    return ByteUtils.readFully(fis);
+                    return IOUtils.toByteArray(fis);
                 }
             }
 

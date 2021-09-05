@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 import com.zero.retrowrapper.emulator.registry.IHandler;
+import com.zero.retrowrapper.util.ByteUtils;
 
 public final class SocketEmulator {
     private final Socket socket;

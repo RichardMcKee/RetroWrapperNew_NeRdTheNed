@@ -9,10 +9,11 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.Scanner;
 
+import org.apache.commons.io.IOUtils;
+
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
-import com.zero.retrowrapper.emulator.ByteUtils;
 import com.zero.retrowrapper.emulator.RetroEmulator;
 import com.zero.retrowrapper.emulator.registry.EmulatorHandler;
 
@@ -78,7 +79,7 @@ public final class ResourcesHandler extends EmulatorHandler {
         if (resourceCache.exists()) {
             try
                 (FileInputStream fis = new FileInputStream(resourceCache)) {
-                return ByteUtils.readFully(fis);
+                return IOUtils.toByteArray(fis);
             }
         }
 
@@ -90,7 +91,7 @@ public final class ResourcesHandler extends EmulatorHandler {
             final String hash = jsonObjects.get(res).asObject().get("hash").asString();
             System.out.println(hash);
             final InputStream is = new URL("http://resources.download.minecraft.net/" + hash.substring(0, 2) + "/" + hash).openStream();
-            final byte[] resourceBytes = ByteUtils.readFully(is);
+            final byte[] resourceBytes = IOUtils.toByteArray(is);
             new File(resourceCache.getParent()).mkdirs();
 
             try

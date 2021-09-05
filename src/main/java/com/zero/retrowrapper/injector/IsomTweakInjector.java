@@ -13,6 +13,8 @@ import java.util.HashMap;
 
 import javax.swing.JPanel;
 
+import com.zero.retrowrapper.util.SwingUtils;
+
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
 
@@ -72,7 +74,7 @@ public final class IsomTweakInjector implements IClassTransformer {
                 applet.stop();
             }
         });
-        RetroTweakInjector.loadIconsOnFrames();
+        SwingUtils.loadIconsOnFrames();
     }
 
     private static Class<?> getaClass(String name) throws ClassNotFoundException {

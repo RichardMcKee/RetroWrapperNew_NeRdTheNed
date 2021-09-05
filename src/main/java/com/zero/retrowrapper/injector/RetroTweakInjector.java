@@ -6,12 +6,7 @@ import static org.objectweb.asm.Opcodes.GOTO;
 import static org.objectweb.asm.Opcodes.INVOKESTATIC;
 import static org.objectweb.asm.Opcodes.TABLESWITCH;
 
-import java.awt.Frame;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ListIterator;
 
 import javax.imageio.ImageIO;
@@ -27,6 +22,8 @@ import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.TableSwitchInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
+
+import com.zero.retrowrapper.util.SwingUtils;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
@@ -127,85 +124,8 @@ public final class RetroTweakInjector implements IClassTransformer {
     public static File inject() throws IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
         System.out.println("Turning off ImageIO disk-caching");
         ImageIO.setUseCache(false);
-        RetroTweakInjector.loadIconsOnFrames();
+        SwingUtils.loadIconsOnFrames();
         System.out.println("Setting gameDir to: " + Launch.minecraftHome);
         return Launch.minecraftHome;
-    }
-
-    static void loadIconsOnFrames() {
-        final List<File> iconList = new ArrayList<>();
-        final File[] files = { tryFindIconFile("icons/icon_16x16.png"), tryFindIconFile("icons/icon_32x32.png") };
-
-        for (final File file : files) {
-            if (file != null) {
-                iconList.add(file);
-            }
-        }
-
-        if (!iconList.isEmpty()) {
-            System.out.println("Loading current icons for window from: " + iconList);
-            // TODO Re-add?
-            //Display.setIcon(new ByteBuffer[]{loadIcon(e), loadIcon(bigIcon)});
-            final java.awt.Frame[] frames = java.awt.Frame.getFrames();
-
-            if (frames != null) {
-                final List<BufferedImage> bufferedImageList = new ArrayList<>();
-
-                for (final File icon : iconList) {
-                    try {
-                        final BufferedImage iconImage = ImageIO.read(icon);
-                        bufferedImageList.add(iconImage);
-                    } catch (final IOException e) {
-                        // TODO Better error handling
-                        e.printStackTrace();
-                    }
-                }
-
-                if (!bufferedImageList.isEmpty()) {
-                    for (final Frame frame : frames) {
-                        frame.setIconImages(bufferedImageList);
-                    }
-                }
-            }
-        } else {
-            System.out.println("Could not find any icon files!");
-        }
-    }
-
-    // TODO Re-add?
-    /*private static ByteBuffer loadIcon(File iconFile) throws IOException {
-        final BufferedImage icon = ImageIO.read(iconFile);
-        final int[] rgb = icon.getRGB(0, 0, icon.getWidth(), icon.getHeight(), (int[]) null, 0, icon.getWidth());
-        final ByteBuffer buffer = ByteBuffer.allocate(4 * rgb.length);
-        final int[] arg3 = rgb;
-        final int arg4 = rgb.length;
-
-        for (int arg5 = 0; arg5 < arg4; ++arg5) {
-            final int color = arg3[arg5];
-            buffer.putInt((color << 8) | ((color >> 24) & 255));
-        }
-
-        buffer.flip();
-        return buffer;
-    }*/
-
-    // TODO @Nullable?
-    private static File tryFindIconFile(String file) {
-        final File oldLocation = new File(Launch.assetsDir, file);
-        final File virtualPreAssets = new File(Launch.minecraftHome, "assets/virtual/pre-1.6/" + file);
-        final File virtualLegacyAssets = new File(Launch.minecraftHome, "assets/virtual/legacy/" + file);
-        return tryFindFirstFile(oldLocation, virtualPreAssets, virtualLegacyAssets);
-    }
-
-    // TODO @Nullable?
-    private static File tryFindFirstFile(File... files) {
-        for (final File file : files) {
-            if (file.exists() && file.isFile()) {
-                return file;
-            }
-        }
-
-        System.out.println("File " + files + " does not exist or is not a file!");
-        return null;
     }
 }

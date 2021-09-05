@@ -6,7 +6,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import com.zero.retrowrapper.emulator.ByteUtils;
+import org.apache.commons.io.IOUtils;
+
 import com.zero.retrowrapper.emulator.RetroEmulator;
 import com.zero.retrowrapper.emulator.registry.EmulatorHandler;
 
@@ -21,7 +22,7 @@ public final class LoadHandler extends EmulatorHandler {
 
         try
             (FileInputStream fis = new FileInputStream(new File(RetroEmulator.getInstance().getMapsDirectory(), "map" + id + ".mclevel"))) {
-            final byte[] bytes = ByteUtils.readFully(fis);
+            final byte[] bytes = IOUtils.toByteArray(fis);
             final DataOutputStream dis = new DataOutputStream(os);
             dis.writeUTF("ok");
             dis.write(bytes);

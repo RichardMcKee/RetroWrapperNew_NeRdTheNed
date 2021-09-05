@@ -1,6 +1,5 @@
 package com.zero.retrowrapper.installer;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -12,12 +11,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URISyntaxException;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -26,23 +21,23 @@ import java.util.Scanner;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
-import com.zero.retrowrapper.util.MetadataUtil;
+import com.zero.retrowrapper.util.MetadataUtils;
+import com.zero.retrowrapper.util.SwingUtils;
 
 public final class Installer {
 
@@ -58,29 +53,6 @@ public final class Installer {
 
     private static DefaultListModel<String> model = new DefaultListModel<>();
     private static JList<String> list = new JList<>(model);
-
-    private static void addJComponentCentered(JFrame frame, JComponent component) {
-        component.setAlignmentX(Component.CENTER_ALIGNMENT);
-        component.setAlignmentY(Component.CENTER_ALIGNMENT);
-        frame.add(component);
-    }
-
-    private static void addJButtonCentered(JFrame frame, JButton component) {
-        component.setHorizontalAlignment(SwingConstants.CENTER);
-        component.setVerticalAlignment(SwingConstants.CENTER);
-        addJComponentCentered(frame, component);
-    }
-
-    private static void addJLabelCentered(JFrame frame, JLabel component) {
-        component.setHorizontalAlignment(SwingConstants.CENTER);
-        component.setVerticalAlignment(SwingConstants.CENTER);
-        addJComponentCentered(frame, component);
-    }
-
-    private static void addJTextFieldCentered(JFrame frame, JTextField component) {
-        component.setHorizontalAlignment(SwingConstants.CENTER);
-        addJComponentCentered(frame, component);
-    }
 
     private static String defaultWorkingDirectory() {
         if (SystemUtils.IS_OS_WINDOWS) { // windows uses the %appdata%/.minecraft structure
@@ -199,11 +171,11 @@ public final class Installer {
         // Installer label
         final JLabel installerLabel = new JLabel("Retrowrapper Installer");
         installerLabel.setFont(installerLabel.getFont().deriveFont(20F).deriveFont(Font.BOLD));
-        addJLabelCentered(frame, installerLabel);
+        SwingUtils.addJLabelCentered(frame, installerLabel);
         // Version label
-        final JLabel versionLabel = new JLabel(MetadataUtil.VERSION + " - " + MetadataUtil.INSTALLER_SPLASHES.get(rand.nextInt(MetadataUtil.INSTALLER_SPLASHES.size())));
+        final JLabel versionLabel = new JLabel(MetadataUtils.VERSION + " - " + MetadataUtils.INSTALLER_SPLASHES.get(rand.nextInt(MetadataUtils.INSTALLER_SPLASHES.size())));
         versionLabel.setFont(installerLabel.getFont().deriveFont(12F));
-        addJLabelCentered(frame, versionLabel);
+        SwingUtils.addJLabelCentered(frame, versionLabel);
         // Working directory text field
         final JTextField workDir = new JTextField(workingDirectory);
         workDir.setMaximumSize(new Dimension(300, 20));
@@ -226,10 +198,10 @@ public final class Installer {
                 }
             }
         });
-        addJTextFieldCentered(frame, workDir);
+        SwingUtils.addJTextFieldCentered(frame, workDir);
         // List of versions that can be wrapper
         final JScrollPane scrollList = new JScrollPane(list);
-        addJComponentCentered(frame, scrollList);
+        SwingUtils.addJComponentCentered(frame, scrollList);
         // Install button
         install = new JButton("Install"); //installation code
         // TODO Refactor
@@ -243,13 +215,13 @@ public final class Installer {
                 if (libsDir.exists()) {
                     // Makes sure that the library gets reinstalled
                     // TODO Add version checking?
-                    deleteDirectory(libsDir);
+                    FileUtils.deleteQuietly(libsDir);
                 }
 
                 for (String version : versionList) {
                     if (version.contains("- already wrapped")) {
                         version = version.replace(" - already wrapped", "");
-                        deleteDirectory(new File(directory, "versions" + File.separator + version + "-wrapped"));
+                        FileUtils.deleteQuietly(new File(directory, "versions" + File.separator + version + "-wrapped"));
                     }
 
                     try
@@ -304,7 +276,7 @@ public final class Installer {
                 refreshList(workingDirectory);
             }
         });
-        addJButtonCentered(frame, install);
+        SwingUtils.addJButtonCentered(frame, install);
         // Uninstall button
         uninstall = new JButton("Uninstall ALL versions"); //uninstaller code
         // TODO Refactor
@@ -313,25 +285,25 @@ public final class Installer {
             public void actionPerformed(ActionEvent e) {
                 for (final File f : directories) {
                     if (f.isDirectory() && f.getName().contains("-wrapped")) {
-                        deleteDirectory(f);
+                        FileUtils.deleteQuietly(f);
                     }
                 }
 
                 final File libDir = new File(directory, "libraries" + File.separator + "com" + File.separator + "zero");
 
                 if (libDir.exists()) {
-                    deleteDirectory(libDir);
+                    FileUtils.deleteQuietly(libDir);
                 }
 
                 JOptionPane.showMessageDialog(null, "Successfully uninstalled wrapper", "Success", JOptionPane.INFORMATION_MESSAGE);
                 refreshList(workingDirectory);
             }
         });
-        addJButtonCentered(frame, uninstall);
+        SwingUtils.addJButtonCentered(frame, uninstall);
         // Copyright label
         final JLabel copyrightLabel = new JLabel("\u00a92018 000");
         copyrightLabel.setFont(copyrightLabel.getFont().deriveFont(12F));
-        addJLabelCentered(frame, copyrightLabel);
+        SwingUtils.addJLabelCentered(frame, copyrightLabel);
         refreshList(workingDirectory);
         frame.pack();
         frame.setVisible(true);
@@ -340,24 +312,5 @@ public final class Installer {
 
     public static void main(String[] args) {
         new Installer();
-    }
-
-    private static void deleteDirectory(File f) {
-        try {
-            Files.walkFileTree(f.toPath(), new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    Files.delete(file);
-                    return FileVisitResult.CONTINUE;
-                }
-                @Override
-                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-                    Files.delete(dir);
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-        } catch (final IOException ee) {
-            ee.printStackTrace();
-        }
     }
 }
