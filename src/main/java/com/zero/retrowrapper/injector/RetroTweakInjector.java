@@ -133,22 +133,42 @@ public final class RetroTweakInjector implements IClassTransformer {
     }
 
     static void loadIconsOnFrames() {
-        final File smallIcon = new File(Launch.assetsDir, "icons/icon_16x16.png");
-        final File bigIcon = new File(Launch.assetsDir, "icons/icon_32x32.png");
-        System.out.println("Loading current icons for window from: " + smallIcon + " and " + bigIcon);
-        // TODO Re-add?
-        //Display.setIcon(new ByteBuffer[]{loadIcon(e), loadIcon(bigIcon)});
-        final java.awt.Frame[] frames = java.awt.Frame.getFrames();
+        final List<File> iconList = new ArrayList<>();
+        final File[] files = { tryFindIconFile("icons/icon_16x16.png"), tryFindIconFile("icons/icon_32x32.png") };
 
-        if (frames != null) {
-            final List<BufferedImage> icons = new ArrayList<>();
-            tryAddIcons(icons, smallIcon, bigIcon);
+        for (final File file : files) {
+            if (file != null) {
+                iconList.add(file);
+            }
+        }
 
-            if (!icons.isEmpty()) {
-                for (final Frame frame : frames) {
-                    frame.setIconImages(icons);
+        if (!iconList.isEmpty()) {
+            System.out.println("Loading current icons for window from: " + iconList);
+            // TODO Re-add?
+            //Display.setIcon(new ByteBuffer[]{loadIcon(e), loadIcon(bigIcon)});
+            final java.awt.Frame[] frames = java.awt.Frame.getFrames();
+
+            if (frames != null) {
+                final List<BufferedImage> bufferedImageList = new ArrayList<>();
+
+                for (final File icon : iconList) {
+                    try {
+                        final BufferedImage iconImage = ImageIO.read(icon);
+                        bufferedImageList.add(iconImage);
+                    } catch (final IOException e) {
+                        // TODO Better error handling
+                        e.printStackTrace();
+                    }
+                }
+
+                if (!bufferedImageList.isEmpty()) {
+                    for (final Frame frame : frames) {
+                        frame.setIconImages(bufferedImageList);
+                    }
                 }
             }
+        } else {
+            System.out.println("Could not find any icon files!");
         }
     }
 
@@ -169,19 +189,23 @@ public final class RetroTweakInjector implements IClassTransformer {
         return buffer;
     }*/
 
-    private static void tryAddIcons(List<BufferedImage> iconList, File... icons) {
-        for (final File icon : icons) {
-            if (icon.exists() && icon.isFile()) {
-                try {
-                    final BufferedImage iconImage = ImageIO.read(icon);
-                    iconList.add(iconImage);
-                } catch (final IOException e) {
-                    // TODO Better error handling
-                    e.printStackTrace();
-                }
-            } else {
-                System.out.println("Icon " + icon + " does not exist or is not a file!");
+    // TODO @Nullable?
+    private static File tryFindIconFile(String file) {
+        final File oldLocation = new File(Launch.assetsDir, file);
+        final File virtualPreAssets = new File(Launch.minecraftHome, "assets/virtual/pre-1.6/" + file);
+        final File virtualLegacyAssets = new File(Launch.minecraftHome, "assets/virtual/legacy/" + file);
+        return tryFindFirstFile(oldLocation, virtualPreAssets, virtualLegacyAssets);
+    }
+
+    // TODO @Nullable?
+    private static File tryFindFirstFile(File... files) {
+        for (final File file : files) {
+            if (file.exists() && file.isFile()) {
+                return file;
             }
         }
+
+        System.out.println("File " + files + " does not exist or is not a file!");
+        return null;
     }
 }
