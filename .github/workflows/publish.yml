@@ -38,7 +38,7 @@ jobs:
         arguments: build
       env:
         BUILD_RELEASE: ${{ github.event.release.prerelease == false }}
-    - name: Rezip mod .jar files to remove directory entries
+    - name: Rezip build .jar files to remove directory entries
       run: bash removeDirectoryEntries.sh
     - name: Run strip-nondeterminism on built .jar files
       run: strip-nondeterminism build/libs/*.jar
