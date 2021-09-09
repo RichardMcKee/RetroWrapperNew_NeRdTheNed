@@ -37,6 +37,7 @@ public final class EmulatorRegistry {
         register(new ResourcesHandlerBeta());
         register(new SkinOrCapeHandler("/skin/", false));
         register(new SkinOrCapeHandler("/MinecraftSkins/", false));
+        register(new SkinOrCapeHandler("/capes/", true));
         register(new SkinOrCapeHandler("/MinecraftCloaks/", true));
     }
 }
