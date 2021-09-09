@@ -5,6 +5,7 @@ import java.awt.Frame;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +16,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+
+import org.lwjgl.opengl.Display;
 
 public class SwingUtil {
     public static void addJButtonCentered(JFrame frame, JButton component) {
@@ -47,8 +50,20 @@ public class SwingUtil {
 
         if (!iconList.isEmpty()) {
             System.out.println("Loading current icons for window from: " + iconList);
-            // TODO Re-add?
-            //Display.setIcon(new ByteBuffer[]{loadIcon(e), loadIcon(bigIcon)});
+            // TODO Refactor
+            final List<ByteBuffer> iconsAsByteBufferArrayList = new ArrayList<>();
+
+            for (final File icon : iconList) {
+                try {
+                    final ByteBuffer loadedIcon = FileUtil.loadIcon(icon);
+                    iconsAsByteBufferArrayList.add(loadedIcon);
+                } catch (final IOException e) {
+                    // TODO Better error handling
+                    e.printStackTrace();
+                }
+            }
+
+            Display.setIcon(iconsAsByteBufferArrayList.toArray(new ByteBuffer[0]));
             final java.awt.Frame[] frames = java.awt.Frame.getFrames();
 
             if (frames != null) {

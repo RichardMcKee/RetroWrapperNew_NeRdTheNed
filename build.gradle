@@ -72,7 +72,8 @@ shadowJar {
     dependencies {
         exclude(dependency("org.ow2.asm:asm-all:${project.asmVersion}"))
         exclude(dependency("net.minecraft:launchwrapper:${project.launchwrapperVersion}"))
-        exclude(dependency("net.sf.jopt-simple:jopt-simple:${project.joptSimpleVersion}"))
+        //exclude(dependency("net.sf.jopt-simple:jopt-simple:${project.joptSimpleVersion}"))
+        exclude(dependency("org.lwjgl.lwjgl:lwjgl:${project.lwjglVersion}"))
     }
 
     minimize()
@@ -113,7 +114,12 @@ dependencies {
     }
 
     // jopt
-    api "net.sf.jopt-simple:jopt-simple:${project.joptSimpleVersion}"
+    //api "net.sf.jopt-simple:jopt-simple:${project.joptSimpleVersion}"
+
+    // lwjgl
+    api ("org.lwjgl.lwjgl:lwjgl:${project.lwjglVersion}") {
+        transitive = false
+    }
 
     // commons-codec, for Base 64 decoding of skin strings
     implementation "commons-codec:commons-codec:${project.commonsCodecVersion}"
