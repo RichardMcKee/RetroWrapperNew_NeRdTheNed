@@ -25,39 +25,58 @@ import com.eclipsesource.json.JsonValue;
 import com.zero.retrowrapper.emulator.RetroEmulator;
 import com.zero.retrowrapper.emulator.registry.EmulatorHandler;
 
-public final class SkinHandler extends EmulatorHandler {
-    private final HashMap<String, byte[]> skinsCache = new HashMap<>();
+public final class SkinOrCapeHandler extends EmulatorHandler {
+    private final HashMap<String, byte[]> imagesCache = new HashMap<>();
+    // TODO Refactor
+    private final boolean isCape;
 
-    public SkinHandler(String url) {
+    public SkinOrCapeHandler(String url, boolean isCape) {
         super(url);
+        // TODO Refactor
+        this.isCape = isCape;
     }
 
     @Override
     public void handle(OutputStream os, String get, byte[] data) throws IOException {
         final String username = get.replace(url, "").replace(".png", "");
+        final String cacheName;
 
-        if (skinsCache.containsKey(username)) {
-            os.write(skinsCache.get(username));
+        if (isCape) {
+            cacheName = username + ".cape";
         } else {
-            final byte[] bytes3 = downloadSkin(username);
+            cacheName = username;
+        }
+
+        if (imagesCache.containsKey(cacheName)) {
+            os.write(imagesCache.get(cacheName));
+        } else {
+            final byte[] bytes3 = downloadSkinOrCape(username, isCape);
 
             if (bytes3 != null) {
-                final BufferedImage imgSkinRaw = ImageIO.read(new ByteArrayInputStream(bytes3));
-                final BufferedImage imgSkinFixed = new BufferedImage(64, 32, BufferedImage.TYPE_INT_ARGB);
-                imgSkinFixed.getGraphics().drawImage(imgSkinRaw, 0, 0, null);
-                final ByteArrayOutputStream osSkin = new ByteArrayOutputStream();
-                ImageIO.write(imgSkinFixed, "png", osSkin);
-                osSkin.flush();
-                final byte[] bytes = osSkin.toByteArray();
+                final BufferedImage imgRaw = ImageIO.read(new ByteArrayInputStream(bytes3));
+                final BufferedImage imgFixed = new BufferedImage(64, 32, BufferedImage.TYPE_INT_ARGB);
+                imgFixed.getGraphics().drawImage(imgRaw, 0, 0, null);
+                final ByteArrayOutputStream osImg = new ByteArrayOutputStream();
+                ImageIO.write(imgFixed, "png", osImg);
+                osImg.flush();
+                final byte[] bytes = osImg.toByteArray();
                 os.write(bytes);
-                skinsCache.put(username, bytes);
+                imagesCache.put(cacheName, bytes);
             }
         }
     }
 
     // TODO @Nullable?
-    private static byte[] downloadSkin(String username) throws IOException {
-        final File skinCache = new File(RetroEmulator.getInstance().getCacheDirectory(), username + ".png");
+    private static byte[] downloadSkinOrCape(String username, boolean cape) throws IOException {
+        final String fileNameEnd;
+
+        if (cape) {
+            fileNameEnd = ".cape.png";
+        } else {
+            fileNameEnd = ".png";
+        }
+
+        final File imageCache = new File(RetroEmulator.getInstance().getCacheDirectory(), username + fileNameEnd);
 
         try
             (InputStreamReader reader = new InputStreamReader(new URL("https://api.mojang.com/users/profiles/minecraft/" + username + "?at=" + System.currentTimeMillis()).openStream())) {
@@ -81,25 +100,42 @@ public final class SkinHandler extends EmulatorHandler {
 
                 final JsonObject textures1 = (JsonObject) Json.parse(new String(Base64.decodeBase64(base64)));
                 final JsonObject textures = (JsonObject) textures1.get("textures");
-                final JsonObject skin = (JsonObject) textures.get("SKIN");
-                final String skinURL = skin.get("url").asString();
-                System.out.println(skinURL);
-                final InputStream is = new URL(skinURL).openStream();
-                final byte[] skinBytes = IOUtils.toByteArray(is);
+                final JsonObject imageLinkJSON;
 
-                try
-                    (FileOutputStream fos = new FileOutputStream(skinCache)) {
-                    fos.write(skinBytes);
+                if (cape) {
+                    imageLinkJSON = (JsonObject) textures.get("CAPE");
+                } else {
+                    imageLinkJSON = (JsonObject) textures.get("SKIN");
                 }
 
-                return skinBytes;
+                if (imageLinkJSON == null) {
+                    if (cape) {
+                        System.out.println("No cape found for username " + username);
+                    } else {
+                        System.out.println("No skin found for username " + username);
+                    }
+
+                    return null;
+                }
+
+                final String imageURL = imageLinkJSON.get("url").asString();
+                System.out.println(imageURL);
+                final InputStream is = new URL(imageURL).openStream();
+                final byte[] imageBytes = IOUtils.toByteArray(is);
+
+                try
+                    (FileOutputStream fos = new FileOutputStream(imageCache)) {
+                    fos.write(imageBytes);
+                }
+
+                return imageBytes;
             }
         } catch (final Exception e) {
             e.printStackTrace();
 
-            if (skinCache.exists()) {
+            if (imageCache.exists()) {
                 try
-                    (FileInputStream fis = new FileInputStream(skinCache)) {
+                    (FileInputStream fis = new FileInputStream(imageCache)) {
                     return IOUtils.toByteArray(fis);
                 }
             }

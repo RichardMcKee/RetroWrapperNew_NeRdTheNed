@@ -9,7 +9,7 @@ import com.zero.retrowrapper.emulator.registry.handlers.LoadHandler;
 import com.zero.retrowrapper.emulator.registry.handlers.ResourcesHandler;
 import com.zero.retrowrapper.emulator.registry.handlers.ResourcesHandlerBeta;
 import com.zero.retrowrapper.emulator.registry.handlers.SaveHandler;
-import com.zero.retrowrapper.emulator.registry.handlers.SkinHandler;
+import com.zero.retrowrapper.emulator.registry.handlers.SkinOrCapeHandler;
 
 public final class EmulatorRegistry {
     private final List<IHandler> handlers = new ArrayList<>();
@@ -35,7 +35,8 @@ public final class EmulatorRegistry {
         register(new ListmapsHandler());
         register(new ResourcesHandler());
         register(new ResourcesHandlerBeta());
-        register(new SkinHandler("/skin/"));
-        register(new SkinHandler("/MinecraftSkins/"));
+        register(new SkinOrCapeHandler("/skin/", false));
+        register(new SkinOrCapeHandler("/MinecraftSkins/", false));
+        register(new SkinOrCapeHandler("/MinecraftCloaks/", true));
     }
 }
