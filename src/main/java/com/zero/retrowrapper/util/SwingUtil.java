@@ -1,6 +1,7 @@
 package com.zero.retrowrapper.util;
 
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Frame;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -12,7 +13,6 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -20,27 +20,27 @@ import javax.swing.SwingConstants;
 import org.lwjgl.opengl.Display;
 
 public class SwingUtil {
-    public static void addJButtonCentered(JFrame frame, JButton component) {
+    public static void addJButtonCentered(Container container, JButton component) {
         component.setHorizontalAlignment(SwingConstants.CENTER);
         component.setVerticalAlignment(SwingConstants.CENTER);
-        addJComponentCentered(frame, component);
+        addJComponentCentered(container, component);
     }
 
-    public static void addJComponentCentered(JFrame frame, JComponent component) {
+    public static void addJComponentCentered(Container container, JComponent component) {
         component.setAlignmentX(Component.CENTER_ALIGNMENT);
         component.setAlignmentY(Component.CENTER_ALIGNMENT);
-        frame.add(component);
+        container.add(component);
     }
 
-    public static void addJLabelCentered(JFrame frame, JLabel component) {
+    public static void addJLabelCentered(Container container, JLabel component) {
         component.setHorizontalAlignment(SwingConstants.CENTER);
         component.setVerticalAlignment(SwingConstants.CENTER);
-        addJComponentCentered(frame, component);
+        addJComponentCentered(container, component);
     }
 
-    public static void addJTextFieldCentered(JFrame frame, JTextField component) {
+    public static void addJTextFieldCentered(Container container, JTextField component) {
         component.setHorizontalAlignment(SwingConstants.CENTER);
-        addJComponentCentered(frame, component);
+        addJComponentCentered(container, component);
     }
 
     public static void loadIconsOnFrames() {
