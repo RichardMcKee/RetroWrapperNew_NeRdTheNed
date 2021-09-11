@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
@@ -18,12 +19,10 @@ import com.zero.retrowrapper.injector.RetroTweakInjectorTarget;
 
 public final class HackThread extends Thread {
     // TODO Refactor
-    public JLabel label;
+    private JLabel label;
+    private RetroPlayer player;
 
-    @Override
-    public void run() {
-        final RetroPlayer player = new RetroPlayer(this);
-
+    private void setupSwingGUI() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (final Exception e) {
@@ -76,6 +75,23 @@ public final class HackThread extends Thread {
         });
         frame.add(b);
         frame.setVisible(true);
+    }
+
+    @Override
+    public void run() {
+        player = new RetroPlayer(this);
+
+        try {
+            SwingUtilities.invokeAndWait(new Runnable() {
+                @Override
+                public void run() {
+                    setupSwingGUI();
+                }
+            });
+        } catch (final Exception e) {
+            // TODO Better error handling
+            e.printStackTrace();
+        }
 
         try {
             final EmulatorConfig config = EmulatorConfig.getInstance();
@@ -125,5 +141,19 @@ public final class HackThread extends Thread {
         }
 
         return mobClass;
+    }
+
+    void setLabelText(final String text) {
+        try {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    label.setText(text);
+                }
+            });
+        } catch (final Exception e) {
+            // TODO Better error handling
+            e.printStackTrace();
+        }
     }
 }

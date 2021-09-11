@@ -28,12 +28,26 @@ public final class RetroPlayer {
                 ax = getVariable(x2, aabb) - getX();
                 ay = getVariable(y2, aabb) - getY();
                 az = getVariable(z2, aabb) - getZ();
-                thread.label.setText("<html>Position:<br>&nbsp&nbsp&nbsp;x: " + (Math.floor(getX() * 10) / 10) + "<br>&nbsp&nbsp&nbsp;y: " + (Math.floor(getY() * 10) / 10) + "<br>&nbsp&nbsp&nbsp;z: " + (Math.floor(getZ() * 10) / 10) + "</html>");
+                thread.setLabelText(getLabelText());
             }
         } catch (final Exception e) {
             e.printStackTrace();
             Thread.sleep(1000);
         }
+    }
+
+    private String getLabelText() {
+        Double tempX = null, tempY = null, tempZ = null;
+
+        try {
+            tempX = (Math.floor(getX() * 10) / 10);
+            tempY = (Math.floor(getY() * 10) / 10);
+            tempZ = (Math.floor(getZ() * 10) / 10);
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+
+        return "<html>Position:<br>&nbsp&nbsp&nbsp;x: " + tempX + "<br>&nbsp&nbsp&nbsp;y: " + tempY + "<br>&nbsp&nbsp&nbsp;z: " + tempZ + "</html>";
     }
 
     public void setAABB() throws IllegalArgumentException, IllegalAccessException {

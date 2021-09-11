@@ -13,7 +13,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.swing.JPanel;
 
@@ -45,11 +44,6 @@ public final class RetroTweakInjectorTarget implements IClassTransformer {
         System.out.println("*       emulator by 000      *");
         System.out.println("******************************");
         new RetroEmulator().start();
-        final Properties props = System.getProperties();
-
-        if (props.getProperty("retrowrapper.hack") != null) {
-            new HackThread().start();
-        }
 
         try {
             Class<?> clazz;
@@ -113,6 +107,10 @@ public final class RetroTweakInjectorTarget implements IClassTransformer {
 
             EmulatorConfig.getInstance().applet = object;
             startMinecraft(fakeLauncher, object, args);
+
+            if (System.getProperties().getProperty("retrowrapper.hack") != null) {
+                new HackThread().start();
+            }
         } catch (final Exception e) {
             e.printStackTrace();
             System.exit(1);
