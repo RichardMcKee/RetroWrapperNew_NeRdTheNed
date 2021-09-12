@@ -3,7 +3,7 @@ name: Build on release
 on:
   push:
     # Sequence of patterns matched against refs/tags
-    tags: 'v*+neRd' # Push events to matching v*+neRd
+    tags: 'v*neRd' # Push events to matching v*neRd
 
 jobs:
   build:
